@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mnesa_background"
+    android:padding="@dimen/mnesa_space_6">
+
+    <!-- Top Brand Header -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/mnesa_space_8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_mnesa_logo"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_4"
+            android:text="@string/welcome_headline"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-black"
+            android:lineSpacingExtra="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:text="@string/welcome_subtext"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="15sp"
+            android:lineSpacingExtra="4dp" />
+    </LinearLayout>
+
+    <!-- Core Opportunity Lifecycle Flow Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardLifecycle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mnesa_space_6"
+        app:cardBackgroundColor="@color/mnesa_surface"
+        app:cardCornerRadius="@dimen/mnesa_radius_lg"
+        app:strokeColor="@color/mnesa_border"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/mnesa_space_4">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="THE OPPORTUNITY LIFECYCLE"
+                android:textColor="@color/mnesa_primary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_2"
+                android:text="SEE → SHARE → UNDERSTAND → SAVE → REMIND → ACT → COMPLETE"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium"
+                android:lineSpacingExtra="3dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Bottom Actions Container -->
+    <LinearLayout
+        android:id="@+id/actionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/mnesa_space_4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGetStarted"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="@string/action_get_started"
+            android:textColor="@color/mnesa_white"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            app:backgroundTint="@color/mnesa_primary"
+            app:cornerRadius="@dimen/mnesa_radius_md" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignIn"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:text="@string/action_sign_in"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            app:strokeColor="@color/mnesa_border"
+            app:cornerRadius="@dimen/mnesa_radius_md" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

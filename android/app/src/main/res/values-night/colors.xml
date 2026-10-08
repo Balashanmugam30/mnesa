@@ -27,4 +27,10 @@
     <color name="mnesa_text_secondary">#94A3B8</color>
     <color name="mnesa_text_muted">#64748B</color>
     <color name="mnesa_scrim">#B3000000</color>
+
+    <!-- Semantic Utility Tokens (Dark) -->
+    <color name="mnesa_white">#FFFFFF</color>
+    <color name="mnesa_border">#334155</color>
+    <color name="mnesa_error">#F87171</color>
+    <color name="mnesa_success">#34D399</color>
 </resources>

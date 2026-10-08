@@ -12,8 +12,10 @@ export type OpportunityBadgeType =
   | "OTHER";
 
 export interface BadgeProps {
-  type: OpportunityBadgeType;
+  type?: OpportunityBadgeType;
+  variant?: string;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const typeStyles: Record<OpportunityBadgeType, string> = {
@@ -28,12 +30,12 @@ const typeStyles: Record<OpportunityBadgeType, string> = {
   OTHER: "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800",
 };
 
-export const Badge: React.FC<BadgeProps> = ({ type, className = "" }) => {
+export const Badge: React.FC<BadgeProps> = ({ type = "OTHER", className = "", children }) => {
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase border ${typeStyles[type]} ${className}`}
     >
-      {type}
+      {children || type}
     </span>
   );
 };

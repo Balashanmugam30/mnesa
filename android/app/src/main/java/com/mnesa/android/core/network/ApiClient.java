@@ -1,0 +1,78 @@
+package com.mnesa.android.core.network;
+
+import android.content.Context;
+
+import com.mnesa.android.core.security.SecureTokenManager;
+import com.mnesa.android.data.remote.api.AuthApiService;
+import com.mnesa.android.data.remote.api.UserApiService;
+
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class ApiClient {
+
+    private static volatile ApiClient instance;
+
+    private final Retrofit retrofit;
+    private final AuthApiService authApiService;
+    private final UserApiService userApiService;
+    private final SecureTokenManager tokenManager;
+
+    private ApiClient(Context context) {
+        this.tokenManager = new SecureTokenManager(context.getApplicationContext());
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        AuthInterceptor authInterceptor = new AuthInterceptor(tokenManager);
+        TokenAuthenticator authenticator = new TokenAuthenticator(tokenManager);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(ApiConstants.CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(ApiConstants.READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .addInterceptor(authInterceptor)
+                .addInterceptor(logging)
+                .authenticator(authenticator)
+                .build();
+
+        this.retrofit = new Retrofit.Builder()
+                .baseUrl(ApiConstants.BASE_URL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .build();
+
+        this.authApiService = retrofit.create(AuthApiService.class);
+        this.userApiService = retrofit.create(UserApiService.class);
+
+        authenticator.setAuthApiService(authApiService);
+    }
+
+    public static ApiClient getInstance(Context context) {
+        if (instance == null) {
+            synchronized (ApiClient.class) {
+                if (instance == null) {
+                    instance = new ApiClient(context);
+                }
+            }
+        }
+        return instance;
+    }
+
+    public AuthApiService getAuthApiService() {
+        return authApiService;
+    }
+
+    public UserApiService getUserApiService() {
+        return userApiService;
+    }
+
+    public SecureTokenManager getTokenManager() {
+        return tokenManager;
+    }
+}

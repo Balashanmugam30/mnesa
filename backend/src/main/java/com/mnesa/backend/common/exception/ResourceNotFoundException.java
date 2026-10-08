@@ -15,4 +15,9 @@ public class ResourceNotFoundException extends MnesaException {
         super(String.format("%s with identifier '%s' was not found", resourceName, identifier),
                 HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND");
     }
+
+    public ResourceNotFoundException(String resourceName, String fieldName, Object identifier) {
+        super(String.format("%s with %s '%s' was not found", resourceName, fieldName, identifier),
+                HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND");
+    }
 }

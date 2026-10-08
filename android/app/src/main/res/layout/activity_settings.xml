@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/mnesa_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/mnesa_surface"
+            app:title="Account &amp; Settings"
+            app:titleTextColor="@color/mnesa_text_primary"
+            app:navigationIcon="@drawable/ic_status_check" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/mnesa_space_4">
+
+            <!-- Profile Overview Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/mnesa_surface"
+                app:cardCornerRadius="@dimen/mnesa_radius_lg"
+                app:strokeColor="@color/mnesa_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/mnesa_space_4">
+
+                    <TextView
+                        android:id="@+id/tvUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User Name"
+                        android:textColor="@color/mnesa_text_primary"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif-black" />
+
+                    <TextView
+                        android:id="@+id/tvUserEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/mnesa_space_1"
+                        android:text="user@example.com"
+                        android:textColor="@color/mnesa_text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvAccountStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/mnesa_space_3"
+                        android:background="@drawable/bg_badge_pill"
+                        android:paddingStart="@dimen/mnesa_space_3"
+                        android:paddingEnd="@dimen/mnesa_space_3"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:text="ACTIVE"
+                        android:textColor="@color/mnesa_primary"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Notifications Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_6"
+                android:text="NOTIFICATION PREFERENCES"
+                android:textColor="@color/mnesa_primary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.08" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_2"
+                app:cardBackgroundColor="@color/mnesa_surface"
+                app:cardCornerRadius="@dimen/mnesa_radius_lg"
+                app:strokeColor="@color/mnesa_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/mnesa_space_4">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchPush"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Push Notifications"
+                        android:textColor="@color/mnesa_text_primary"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/mnesa_space_3"
+                        android:checked="true"
+                        android:text="Email Reminders"
+                        android:textColor="@color/mnesa_text_primary"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Actions Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_6"
+                android:text="SESSION &amp; PRIVACY"
+                android:textColor="@color/mnesa_primary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.08" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignOut"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="@dimen/mnesa_space_3"
+                android:text="@string/action_sign_out"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                app:strokeColor="@color/mnesa_border"
+                app:cornerRadius="@dimen/mnesa_radius_md" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteAccount"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="@dimen/mnesa_space_2"
+                android:text="@string/action_delete_account"
+                android:textColor="@color/mnesa_error"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/mnesa_space_4"
+                android:visibility="gone"
+                android:indeterminateTint="@color/mnesa_primary" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

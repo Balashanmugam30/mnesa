@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/mnesa_background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mnesa_space_6">
+
+        <TextView
+            android:id="@+id/titleInterests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_8"
+            android:text="@string/onboarding_interests_title"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/subtitleInterests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2"
+            android:text="@string/onboarding_interests_subtitle"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/titleInterests"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Opportunities Focus Area Chips -->
+        <TextView
+            android:id="@+id/sectionOpportunities"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="OPPORTUNITY FOCUS AREAS"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.08"
+            app:layout_constraintTop_toBottomOf="@id/subtitleInterests"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupInterests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            app:chipSpacing="@dimen/mnesa_space_2"
+            app:layout_constraintTop_toBottomOf="@id/sectionOpportunities"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipInternships"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Internships"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipJobs"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full-time Jobs"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipHackathons"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hackathons"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipScholarships"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scholarships" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCompetitions"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Competitions" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipEvents"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Conferences &amp; Events" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCourses"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Courses &amp; Certs" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipGrants"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grants" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Urgency Timing Section -->
+        <TextView
+            android:id="@+id/sectionTiming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="REMINDER CADENCE"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.08"
+            app:layout_constraintTop_toBottomOf="@id/chipGroupInterests"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rgTiming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            app:layout_constraintTop_toBottomOf="@id/sectionTiming"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RadioButton
+                android:id="@+id/rbStandard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:padding="@dimen/mnesa_space_2"
+                android:text="@string/timing_standard"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbAggressive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/mnesa_space_2"
+                android:text="@string/timing_aggressive"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbImmediate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/mnesa_space_2"
+                android:text="@string/timing_immediate"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="14sp" />
+        </RadioGroup>
+
+        <!-- Submit Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFinishSetup"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/mnesa_space_8"
+            android:layout_marginBottom="@dimen/mnesa_space_6"
+            android:text="@string/action_finish_setup"
+            android:textColor="@color/mnesa_white"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            app:backgroundTint="@color/mnesa_primary"
+            app:cornerRadius="@dimen/mnesa_radius_md"
+            app:layout_constraintTop_toBottomOf="@id/rgTiming"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/mnesa_background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mnesa_space_6">
+
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/mnesa_space_8"
+            android:src="@drawable/ic_mnesa_logo"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/titleRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_4"
+            android:text="Get started with MNESA"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-black"
+            app:layout_constraintTop_toBottomOf="@id/logoImage"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/subtitleRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_1"
+            android:text="Capture any opportunity in seconds"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/titleRegister"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_4"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/mnesa_surface"
+            app:strokeColor="@color/mnesa_error"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="@dimen/mnesa_radius_md"
+            app:layout_constraintTop_toBottomOf="@id/subtitleRegister"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/tvErrorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/mnesa_space_3"
+                android:textColor="@color/mnesa_error"
+                android:textSize="14sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Full Name Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilFullName"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:hint="@string/prompt_full_name"
+            app:layout_constraintTop_toBottomOf="@id/cardError"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:hint="@string/prompt_email"
+            app:layout_constraintTop_toBottomOf="@id/tilFullName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:hint="@string/prompt_password"
+            app:endIconMode="password_toggle"
+            app:helperText="Minimum 8 characters"
+            app:layout_constraintTop_toBottomOf="@id/tilEmail"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Submit Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="@string/action_sign_up"
+            android:textColor="@color/mnesa_white"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            app:backgroundTint="@color/mnesa_primary"
+            app:cornerRadius="@dimen/mnesa_radius_md"
+            app:layout_constraintTop_toBottomOf="@id/tilPassword"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/mnesa_space_4"
+            android:visibility="gone"
+            android:indeterminateTint="@color/mnesa_primary"
+            app:layout_constraintTop_toBottomOf="@id/btnSubmitSignUp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Sign In Link -->
+        <TextView
+            android:id="@+id/btnGoToSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:layout_marginBottom="@dimen/mnesa_space_6"
+            android:padding="@dimen/mnesa_space_2"
+            android:text="Already have an account? Sign In"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/progressBar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

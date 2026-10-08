@@ -59,6 +59,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<ProblemDetail> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex, HttpServletRequest request) {
+        log.warn("Authentication failed on [{}]: {}", request.getRequestURI(), ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        problem.setType(URI.create(BASE_PROBLEM_URI + "authentication-failed"));
+        problem.setTitle("Unauthorized");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        enrichProblemDetail(problem, "AUTHENTICATION_FAILED");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleGeneralException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled internal server error on [{}]", request.getRequestURI(), ex);

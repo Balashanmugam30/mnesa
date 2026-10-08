@@ -45,4 +45,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(com.mnesa.android.R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        if (item.getItemId() == com.mnesa.android.R.id.action_settings) {
+            startActivity(new android.content.Intent(this, com.mnesa.android.presentation.settings.SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

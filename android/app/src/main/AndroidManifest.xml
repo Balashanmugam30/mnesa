@@ -15,15 +15,51 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mnesa">
 
-        <!-- Main Dashboard Activity -->
+        <!-- Launch / Splash Activity -->
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".presentation.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Welcome Onboarding Activity -->
+        <activity
+            android:name=".presentation.welcome.WelcomeActivity"
+            android:exported="false" />
+
+        <!-- Authentication Activities -->
+        <activity
+            android:name=".presentation.auth.SignInActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".presentation.auth.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".presentation.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Onboarding Personalization -->
+        <activity
+            android:name=".presentation.onboarding.OnboardingInterestsActivity"
+            android:exported="false" />
+
+        <!-- Settings & Profile -->
+        <activity
+            android:name=".presentation.settings.SettingsActivity"
+            android:exported="false" />
+
+        <!-- Main Dashboard Activity -->
+        <activity
+            android:name=".presentation.main.MainActivity"
+            android:exported="false" />
 
         <!-- Ultra-Fast Share Target Capture Activity -->
         <activity

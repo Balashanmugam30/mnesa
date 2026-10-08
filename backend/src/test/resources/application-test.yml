@@ -17,3 +17,10 @@ logging:
   level:
     root: INFO
     com.mnesa.backend: DEBUG
+
+mnesa:
+  security:
+    jwt:
+      secret-key: test_jwt_secret_key_minimum_256_bits_length_for_hmac_sha256_secure_2026!
+      access-token-expiration-ms: 3600000
+      refresh-token-expiration-ms: 2592000000

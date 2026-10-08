@@ -13,8 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.mnesa.backend.config.JwtProperties;
+import com.mnesa.backend.modules.auth.security.JwtAuthenticationFilter;
+import com.mnesa.backend.modules.auth.security.JwtTokenProvider;
+import com.mnesa.backend.modules.auth.security.RestAccessDeniedHandler;
+import com.mnesa.backend.modules.auth.security.RestAuthenticationEntryPoint;
+
 @WebMvcTest(HealthController.class)
-@Import({SecurityConfig.class, CorrelationIdFilter.class})
+@Import({SecurityConfig.class, CorrelationIdFilter.class, JwtAuthenticationFilter.class, JwtTokenProvider.class, JwtProperties.class, RestAuthenticationEntryPoint.class, RestAccessDeniedHandler.class})
 class HealthControllerTest {
 
     @Autowired

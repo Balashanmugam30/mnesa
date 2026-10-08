@@ -33,4 +33,30 @@
     <string name="status_completed">Completed</string>
     <string name="empty_opportunities_title">No Opportunities Yet</string>
     <string name="empty_opportunities_body">Share an internship, hackathon, or scholarship from any app to capture it instantly.</string>
+
+    <!-- Authentication & Onboarding -->
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_up">Create Account</string>
+    <string name="action_sign_out">Sign Out</string>
+    <string name="action_delete_account">Delete Account</string>
+    <string name="action_get_started">Get Started</string>
+    <string name="action_continue_google">Continue with Google</string>
+    <string name="action_forgot_password">Forgot Password?</string>
+    <string name="action_send_reset_link">Send Reset Link</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_finish_setup">Finish Setup</string>
+    <string name="prompt_email">Email Address</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_full_name">Full Name</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
+    <string name="welcome_headline">Never miss an opportunity again</string>
+    <string name="welcome_subtext">Share any internship, hackathon, scholarship or grant from any app. MNESA captures deadlines and coordinates proactive reminders.</string>
+    <string name="onboarding_interests_title">What opportunities matter to you?</string>
+    <string name="onboarding_interests_subtitle">We tailor capture recognition and reminder cadences to your focus areas.</string>
+    <string name="onboarding_timing_title">Default Reminder Urgency</string>
+    <string name="timing_standard">Standard (1 week, 3 days, 1 day)</string>
+    <string name="timing_aggressive">Aggressive (Daily in final week)</string>
+    <string name="timing_immediate">Immediate (Next day)</string>
+    <string name="dialog_delete_account_title">Delete Account?</string>
+    <string name="dialog_delete_account_msg">This will permanently delete your MNESA account, saved opportunities, and reminders. This action cannot be undone.</string>
 </resources>
