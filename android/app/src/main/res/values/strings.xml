@@ -59,4 +59,52 @@
     <string name="timing_immediate">Immediate (Next day)</string>
     <string name="dialog_delete_account_title">Delete Account?</string>
     <string name="dialog_delete_account_msg">This will permanently delete your MNESA account, saved opportunities, and reminders. This action cannot be undone.</string>
+
+    <!-- Phase 03 Navigation & Shell -->
+    <string name="nav_home">Home</string>
+    <string name="nav_opportunities">Opportunities</string>
+    <string name="nav_reminders">Reminders</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Offline Banner -->
+    <string name="offline_banner_title">You\'re offline</string>
+    <string name="offline_banner_desc">Your saved opportunities are still available.</string>
+    <string name="online_banner_title">Connection restored</string>
+    <string name="online_banner_desc">Syncing changes…</string>
+
+    <!-- Home Screen -->
+    <string name="greeting_morning">Good morning.</string>
+    <string name="greeting_afternoon">Good afternoon.</string>
+    <string name="greeting_evening">Good evening.</string>
+    <string name="section_needs_attention">Needs Attention</string>
+    <string name="section_upcoming">Upcoming Deadlines</string>
+    <string name="section_recently_saved">Recently Saved</string>
+    <string name="progress_title">Opportunity Progress</string>
+    <string name="progress_tracked">Tracked</string>
+    <string name="progress_urgent">Urgent</string>
+    <string name="progress_reminders">Reminders</string>
+    <string name="btn_load_sample_data">Load Sample Data</string>
+    <string name="btn_clear_data">Clear Local Data</string>
+    <string name="empty_home_title">Nothing here yet.</string>
+    <string name="empty_home_body">See something worth remembering? MNESA will keep it for you.</string>
+
+    <!-- Opportunities Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_internships">Internships</string>
+    <string name="filter_jobs">Jobs</string>
+    <string name="filter_hackathons">Hackathons</string>
+    <string name="filter_scholarships">Scholarships</string>
+    <string name="filter_competitions">Competitions</string>
+
+    <!-- Reminders Screen -->
+    <string name="reminders_title">Scheduled Reminders</string>
+    <string name="reminders_subtitle">Never miss a deadline. MNESA reminds you before it matters.</string>
+    <string name="empty_reminders_title">No reminders scheduled</string>
+    <string name="empty_reminders_body">Save opportunities with deadlines to see proactive alerts here.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile &amp; Account</string>
+    <string name="profile_offline_status">Room SQLite • Single Source of Truth • Fully Cached</string>
+    <string name="profile_sync_status">Local-First Sync Engine Active</string>
+    <string name="profile_settings_btn">Settings &amp; Preferences</string>
 </resources>

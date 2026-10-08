@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Mnesa.Card.Opportunity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/mnesa_space_2">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mnesa_space_4">
+
+        <ImageView
+            android:id="@+id/imgBell"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/title_reminders"
+            android:src="@drawable/ic_nav_reminders"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tint="@color/mnesa_primary" />
+
+        <TextView
+            android:id="@+id/txtReminderCadence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/mnesa_space_2"
+            android:background="@drawable/bg_badge_pill"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgBell"
+            tools:text="3 DAYS BEFORE" />
+
+        <TextView
+            android:id="@+id/txtReminderStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mnesa_success"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="SCHEDULED" />
+
+        <TextView
+            android:id="@+id/txtReminderTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/txtReminderCadence"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Submit final application draft for DeepMind Internship" />
+
+        <TextView
+            android:id="@+id/txtTriggerTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_1"
+            android:drawableStart="@drawable/ic_deadline_clock"
+            android:drawablePadding="@dimen/mnesa_space_1"
+            android:textColor="@color/mnesa_urgency_warning"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/txtReminderTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Trigger: Tomorrow at 9:00 AM" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -6,7 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 /**
- * Room persistence entity for cached opportunities.
+ * Room persistence entity for cached opportunities with user isolation.
  */
 @Entity(tableName = "opportunities")
 public class OpportunityEntity {
@@ -17,6 +17,10 @@ public class OpportunityEntity {
     private String id;
 
     @NonNull
+    @ColumnInfo(name = "user_id", defaultValue = "")
+    private String userId;
+
+    @NonNull
     @ColumnInfo(name = "title")
     private String title;
 
@@ -24,18 +28,40 @@ public class OpportunityEntity {
     private String organization;
 
     @NonNull
-    @ColumnInfo(name = "type")
-    private String type;
+    @ColumnInfo(name = "category", defaultValue = "OTHER")
+    private String category;
 
-    @NonNull
-    @ColumnInfo(name = "status")
-    private String status;
+    @ColumnInfo(name = "description")
+    private String description;
 
     @ColumnInfo(name = "source_url")
     private String sourceUrl;
 
+    @ColumnInfo(name = "registration_url")
+    private String registrationUrl;
+
     @ColumnInfo(name = "deadline_timestamp")
     private Long deadlineTimestamp;
+
+    @ColumnInfo(name = "deadline_timezone")
+    private String deadlineTimezone;
+
+    @ColumnInfo(name = "eligibility")
+    private String eligibility;
+
+    @ColumnInfo(name = "location")
+    private String location;
+
+    @ColumnInfo(name = "estimated_effort")
+    private String estimatedEffort;
+
+    @NonNull
+    @ColumnInfo(name = "priority", defaultValue = "MEDIUM")
+    private String priority;
+
+    @NonNull
+    @ColumnInfo(name = "status")
+    private String status;
 
     @ColumnInfo(name = "confidence_score")
     private float confidenceScore;
@@ -43,24 +69,51 @@ public class OpportunityEntity {
     @ColumnInfo(name = "created_at")
     private long createdAt;
 
+    @ColumnInfo(name = "updated_at", defaultValue = "0")
+    private long updatedAt;
+
+    @NonNull
+    @ColumnInfo(name = "sync_state", defaultValue = "SYNCED")
+    private String syncState;
+
     public OpportunityEntity(@NonNull String id,
+                             @NonNull String userId,
                              @NonNull String title,
                              String organization,
-                             @NonNull String type,
-                             @NonNull String status,
+                             @NonNull String category,
+                             String description,
                              String sourceUrl,
+                             String registrationUrl,
                              Long deadlineTimestamp,
+                             String deadlineTimezone,
+                             String eligibility,
+                             String location,
+                             String estimatedEffort,
+                             @NonNull String priority,
+                             @NonNull String status,
                              float confidenceScore,
-                             long createdAt) {
+                             long createdAt,
+                             long updatedAt,
+                             @NonNull String syncState) {
         this.id = id;
+        this.userId = userId;
         this.title = title;
         this.organization = organization;
-        this.type = type;
-        this.status = status;
+        this.category = category;
+        this.description = description;
         this.sourceUrl = sourceUrl;
+        this.registrationUrl = registrationUrl;
         this.deadlineTimestamp = deadlineTimestamp;
+        this.deadlineTimezone = deadlineTimezone;
+        this.eligibility = eligibility;
+        this.location = location;
+        this.estimatedEffort = estimatedEffort;
+        this.priority = priority;
+        this.status = status;
         this.confidenceScore = confidenceScore;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.syncState = syncState;
     }
 
     @NonNull
@@ -70,6 +123,15 @@ public class OpportunityEntity {
 
     public void setId(@NonNull String id) {
         this.id = id;
+    }
+
+    @NonNull
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(@NonNull String userId) {
+        this.userId = userId;
     }
 
     @NonNull
@@ -90,21 +152,20 @@ public class OpportunityEntity {
     }
 
     @NonNull
-    public String getType() {
-        return type;
+    public String getCategory() {
+        return category;
     }
 
-    public void setType(@NonNull String type) {
-        this.type = type;
+    public void setCategory(@NonNull String category) {
+        this.category = category;
     }
 
-    @NonNull
-    public String getStatus() {
-        return status;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStatus(@NonNull String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getSourceUrl() {
@@ -115,12 +176,70 @@ public class OpportunityEntity {
         this.sourceUrl = sourceUrl;
     }
 
+    public String getRegistrationUrl() {
+        return registrationUrl;
+    }
+
+    public void setRegistrationUrl(String registrationUrl) {
+        this.registrationUrl = registrationUrl;
+    }
+
     public Long getDeadlineTimestamp() {
         return deadlineTimestamp;
     }
 
     public void setDeadlineTimestamp(Long deadlineTimestamp) {
         this.deadlineTimestamp = deadlineTimestamp;
+    }
+
+    public String getDeadlineTimezone() {
+        return deadlineTimezone;
+    }
+
+    public void setDeadlineTimezone(String deadlineTimezone) {
+        this.deadlineTimezone = deadlineTimezone;
+    }
+
+    public String getEligibility() {
+        return eligibility;
+    }
+
+    public void setEligibility(String eligibility) {
+        this.eligibility = eligibility;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getEstimatedEffort() {
+        return estimatedEffort;
+    }
+
+    public void setEstimatedEffort(String estimatedEffort) {
+        this.estimatedEffort = estimatedEffort;
+    }
+
+    @NonNull
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(@NonNull String priority) {
+        this.priority = priority;
+    }
+
+    @NonNull
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(@NonNull String status) {
+        this.status = status;
     }
 
     public float getConfidenceScore() {
@@ -137,5 +256,22 @@ public class OpportunityEntity {
 
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @NonNull
+    public String getSyncState() {
+        return syncState;
+    }
+
+    public void setSyncState(@NonNull String syncState) {
+        this.syncState = syncState;
     }
 }

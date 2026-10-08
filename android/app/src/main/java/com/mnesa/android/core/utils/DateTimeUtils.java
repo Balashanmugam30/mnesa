@@ -42,4 +42,20 @@ public final class DateTimeUtils {
             return daysRemaining + " days left";
         }
     }
+
+    /**
+     * Formats an epoch millisecond timestamp into a relative deadline string.
+     */
+    public static String formatRelativeDeadline(long timestampMs) {
+        long now = System.currentTimeMillis();
+        long days = getDaysRemaining(timestampMs, now);
+        return formatUrgencyLabel(days);
+    }
+
+    public static String formatRelativeDeadline(Long timestampMs) {
+        if (timestampMs == null || timestampMs <= 0) {
+            return "";
+        }
+        return formatRelativeDeadline(timestampMs.longValue());
+    }
 }

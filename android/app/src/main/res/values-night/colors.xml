@@ -33,4 +33,6 @@
     <color name="mnesa_border">#334155</color>
     <color name="mnesa_error">#F87171</color>
     <color name="mnesa_success">#34D399</color>
+    <color name="mnesa_urgency_critical">#F87171</color>
+    <color name="mnesa_primary_subtle">#1E293B</color>
 </resources>

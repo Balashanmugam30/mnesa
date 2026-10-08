@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/offlineBannerContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/mnesa_space_4"
+    android:layout_marginVertical="@dimen/mnesa_space_2"
+    android:background="@drawable/bg_banner_offline"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/mnesa_space_3"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/imgBannerIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/offline_banner_title"
+        android:src="@drawable/ic_wifi_off"
+        app:tint="@color/mnesa_urgency_critical" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mnesa_space_3"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtBannerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/offline_banner_title"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtBannerDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/offline_banner_desc"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mnesa_background"
+    android:orientation="vertical">
+
+    <!-- Category Filter Chips -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/mnesa_space_4"
+        android:paddingVertical="@dimen/mnesa_space_2"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterAll"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/filter_all" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterInternships"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_internships" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterJobs"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_jobs" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterHackathons"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_hackathons" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterScholarships"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_scholarships" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFilterCompetitions"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_competitions" />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Skeleton Loading Container -->
+        <LinearLayout
+            android:id="@+id/layoutSkeletonLoading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/mnesa_space_4"
+            android:visibility="gone">
+
+            <include layout="@layout/view_skeleton_card" />
+            <include layout="@layout/view_skeleton_card" />
+            <include layout="@layout/view_skeleton_card" />
+        </LinearLayout>
+
+        <!-- Opportunities RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerAllOpportunities"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/mnesa_space_4"
+            android:paddingTop="@dimen/mnesa_space_2"
+            android:paddingBottom="@dimen/mnesa_space_12"
+            tools:listitem="@layout/item_opportunity_card" />
+
+        <!-- Empty State Layout -->
+        <LinearLayout
+            android:id="@+id/layoutEmptyOpportunities"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/mnesa_space_8"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@string/empty_opportunities_title"
+                android:src="@drawable/ic_capture_share"
+                app:tint="@color/mnesa_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_4"
+                android:text="@string/empty_opportunities_title"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_2"
+                android:gravity="center"
+                android:text="@string/empty_opportunities_body"
+                android:textColor="@color/mnesa_text_secondary"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSeedOpportunities"
+                style="@style/Widget.Mnesa.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_4"
+                android:text="@string/btn_load_sample_data" />
+        </LinearLayout>
+
+        <!-- Error / Retry Layout -->
+        <LinearLayout
+            android:id="@+id/layoutErrorOpportunities"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/mnesa_space_8"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/action_refresh"
+                android:src="@drawable/ic_refresh"
+                app:tint="@color/mnesa_urgency_critical" />
+
+            <TextView
+                android:id="@+id/txtErrorMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_3"
+                android:gravity="center"
+                android:text="Unable to load opportunities"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetryOpportunities"
+                style="@style/Widget.Mnesa.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_4"
+                android:text="@string/action_refresh" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

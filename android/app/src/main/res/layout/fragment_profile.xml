@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mnesa_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/mnesa_space_4"
+        android:paddingTop="@dimen/mnesa_space_6"
+        android:paddingBottom="@dimen/mnesa_space_12">
+
+        <!-- User Identity Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_badge_pill"
+                android:backgroundTint="@color/mnesa_primary_subtle">
+
+                <TextView
+                    android:id="@+id/txtAvatarInitials"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/mnesa_primary"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    tools:text="JD" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/txtProfileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_3"
+                android:textColor="@color/mnesa_text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Jane Doe" />
+
+            <TextView
+                android:id="@+id/txtProfileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/mnesa_text_secondary"
+                android:textSize="14sp"
+                tools:text="jane.doe@example.com" />
+        </LinearLayout>
+
+        <!-- Focus Areas Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="Configured Focus Areas"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupProfileInterests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2">
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Internships" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hackathons" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI &amp; ML" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Storage & Sync Status Cards -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="Storage &amp; Architecture"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Mnesa.Card.Opportunity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/mnesa_space_4">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Offline-First Cache"
+                    android:textColor="@color/mnesa_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/profile_offline_status"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="@dimen/mnesa_space_3"
+                    android:background="@color/mnesa_border" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Background Sync Engine"
+                    android:textColor="@color/mnesa_text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/profile_sync_status"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action Buttons -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOpenSettings"
+            style="@style/Widget.Mnesa.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_6"
+            android:text="@string/profile_settings_btn" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSignOut"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:text="@string/action_sign_out"
+            android:textColor="@color/mnesa_urgency_critical"
+            app:strokeColor="@color/mnesa_urgency_critical" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
