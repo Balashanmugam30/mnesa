@@ -1,0 +1,44 @@
+name: Website CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'website/**'
+      - '.github/workflows/ci-website.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'website/**'
+      - '.github/workflows/ci-website.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build Next.js Application
+        working-directory: website
+        run: npm run build
+
+      - name: Install Playwright Browsers
+        working-directory: website
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright Smoke Tests
+        working-directory: website
+        run: npm run test:e2e

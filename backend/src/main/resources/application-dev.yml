@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:mnesa_dev}
+    username: ${POSTGRES_USER:mnesa_dev_user}
+    password: ${POSTGRES_PASSWORD:mnesa_secure_dev_pass_2026!}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+logging:
+  level:
+    root: INFO
+    com.mnesa.backend: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO

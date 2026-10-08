@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Filled Button -->
+    <style name="Widget.Mnesa.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/mnesa_button_height</item>
+        <item name="backgroundTint">@color/mnesa_primary</item>
+        <item name="android:textColor">@color/mnesa_on_primary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Mnesa.Medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Secondary / Surface Button -->
+    <style name="Widget.Mnesa.Button.Secondary" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">@dimen/mnesa_button_height</item>
+        <item name="backgroundTint">@color/mnesa_surface_card</item>
+        <item name="android:textColor">@color/mnesa_text_primary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Mnesa.Medium</item>
+        <item name="strokeColor">@color/mnesa_border_subtle</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Outlined Button -->
+    <style name="Widget.Mnesa.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">@dimen/mnesa_button_height</item>
+        <item name="android:textColor">@color/mnesa_primary</item>
+        <item name="strokeColor">@color/mnesa_primary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Mnesa.Medium</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Opportunity Card Style -->
+    <style name="Widget.Mnesa.Card.Opportunity" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/mnesa_surface_card</item>
+        <item name="cardCornerRadius">@dimen/mnesa_radius_lg</item>
+        <item name="cardElevation">@dimen/mnesa_elevation_card</item>
+        <item name="strokeColor">@color/mnesa_border_subtle</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- Shapes -->
+    <style name="ShapeAppearance.Mnesa.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">@dimen/mnesa_radius_sm</item>
+    </style>
+
+    <style name="ShapeAppearance.Mnesa.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">@dimen/mnesa_radius_md</item>
+    </style>
+
+    <style name="ShapeAppearance.Mnesa.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">@dimen/mnesa_radius_lg</item>
+    </style>
+
+    <style name="ShapeAppearance.Mnesa.Pill" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">@dimen/mnesa_radius_pill</item>
+    </style>
+</resources>

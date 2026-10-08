@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Mnesa.Card.Opportunity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/mnesa_space_2"
+    android:layout_marginBottom="@dimen/mnesa_space_2">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mnesa_space_4">
+
+        <!-- Opportunity Type Chip -->
+        <TextView
+            android:id="@+id/chipOpportunityType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_pill"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="HACKATHON" />
+
+        <!-- Deadline Urgency Indicator -->
+        <TextView
+            android:id="@+id/txtDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_deadline_clock"
+            android:drawablePadding="@dimen/mnesa_space_1"
+            android:textColor="@color/mnesa_urgency_warning"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="5 days left" />
+
+        <!-- Opportunity Title -->
+        <TextView
+            android:id="@+id/txtOpportunityTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/chipOpportunityType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Google Summer of Code 2026 Contributor" />
+
+        <!-- Organization / Host Entity -->
+        <TextView
+            android:id="@+id/txtOrganization"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_1"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@id/txtOpportunityTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Google Open Source" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

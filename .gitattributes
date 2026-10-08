@@ -1,0 +1,35 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Explicit text files with LF
+*.sh text eol=lf
+*.bash text eol=lf
+gradlew text eol=lf
+*.py text eol=lf
+*.java text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.properties text eol=lf
+
+# Windows batch files with CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.keystore binary
+*.jks binary

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Core Tokens -->
+    <color name="mnesa_primary">#2563EB</color>
+    <color name="mnesa_primary_variant">#1D4ED8</color>
+    <color name="mnesa_primary_light">#EFF6FF</color>
+    <color name="mnesa_on_primary">#FFFFFF</color>
+
+    <!-- Urgency & Status Tokens -->
+    <color name="mnesa_urgency_warning">#F59E0B</color>
+    <color name="mnesa_urgency_warning_light">#FEF3C7</color>
+    <color name="mnesa_urgency_danger">#EF4444</color>
+    <color name="mnesa_urgency_danger_light">#FEE2E2</color>
+    <color name="mnesa_status_success">#10B981</color>
+    <color name="mnesa_status_success_light">#D1FAE5</color>
+    <color name="mnesa_status_info">#0EA5E9</color>
+    <color name="mnesa_status_info_light">#E0F2FE</color>
+
+    <!-- Opportunity Type Badges -->
+    <color name="badge_internship">#4338CA</color>
+    <color name="badge_hackathon">#7C3AED</color>
+    <color name="badge_scholarship">#059669</color>
+    <color name="badge_job">#2563EB</color>
+
+    <!-- Light Theme Neutrals (Slate) -->
+    <color name="mnesa_background">#FFFFFF</color>
+    <color name="mnesa_surface">#FFFFFF</color>
+    <color name="mnesa_surface_card">#F8FAFC</color>
+    <color name="mnesa_surface_elevated">#FFFFFF</color>
+    <color name="mnesa_border_subtle">#E2E8F0</color>
+    <color name="mnesa_border_strong">#CBD5E1</color>
+    <color name="mnesa_text_primary">#0F172A</color>
+    <color name="mnesa_text_secondary">#475569</color>
+    <color name="mnesa_text_muted">#64748B</color>
+    <color name="mnesa_scrim">#800F172A</color>
+</resources>

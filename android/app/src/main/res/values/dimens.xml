@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing Scale -->
+    <dimen name="mnesa_space_1">4dp</dimen>
+    <dimen name="mnesa_space_2">8dp</dimen>
+    <dimen name="mnesa_space_3">12dp</dimen>
+    <dimen name="mnesa_space_4">16dp</dimen>
+    <dimen name="mnesa_space_5">20dp</dimen>
+    <dimen name="mnesa_space_6">24dp</dimen>
+    <dimen name="mnesa_space_8">32dp</dimen>
+    <dimen name="mnesa_space_12">48dp</dimen>
+    <dimen name="mnesa_space_16">64dp</dimen>
+
+    <!-- Component Minimum Dimensions (Accessibility) -->
+    <dimen name="mnesa_min_touch_target">48dp</dimen>
+    <dimen name="mnesa_button_height">48dp</dimen>
+    <dimen name="mnesa_input_height">48dp</dimen>
+
+    <!-- Corner Radii -->
+    <dimen name="mnesa_radius_sm">6dp</dimen>
+    <dimen name="mnesa_radius_md">10dp</dimen>
+    <dimen name="mnesa_radius_lg">16dp</dimen>
+    <dimen name="mnesa_radius_xl">24dp</dimen>
+    <dimen name="mnesa_radius_pill">999dp</dimen>
+
+    <!-- Card Elevations -->
+    <dimen name="mnesa_elevation_card">2dp</dimen>
+    <dimen name="mnesa_elevation_elevated">6dp</dimen>
+    <dimen name="mnesa_elevation_dialog">16dp</dimen>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Application Brand -->
+    <string name="app_name">MNESA</string>
+    <string name="app_tagline">Capture it. We\'ll remember.</string>
+    <string name="app_brand_alt">Never miss what matters.</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_opportunities">Opportunities</string>
+    <string name="title_saved">Saved</string>
+    <string name="title_reminders">Reminders</string>
+    <string name="title_settings">Settings</string>
+
+    <!-- Capture Flow -->
+    <string name="capture_dialog_title">MNESA Quick Capture</string>
+    <string name="capture_processing">Analyzing opportunity…</string>
+    <string name="capture_success">Opportunity captured! We\'ll remember.</string>
+    <string name="capture_view_details">View Details</string>
+    <string name="capture_done">Done</string>
+
+    <!-- Buttons & Actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_apply">Apply Now</string>
+    <string name="action_remind_me">Set Reminder</string>
+    <string name="action_refresh">Refresh</string>
+
+    <!-- Opportunity Placeholders & Statuses -->
+    <string name="status_captured">Captured</string>
+    <string name="status_understood">Understood</string>
+    <string name="status_saved">Saved</string>
+    <string name="status_acted">Applied</string>
+    <string name="status_completed">Completed</string>
+    <string name="empty_opportunities_title">No Opportunities Yet</string>
+    <string name="empty_opportunities_body">Share an internship, hackathon, or scholarship from any app to capture it instantly.</string>
+</resources>

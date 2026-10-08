@@ -1,0 +1,55 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://mnesa_dev_user:mnesa_secure_dev_pass_2026!@127.0.0.1:5432/mnesa_dev"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.vercel.com"
+      ]
+    },
+    "firebase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firebase-tools",
+        "mcp"
+      ]
+    },
+    "postman": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@postman/mcp-server"
+      ]
+    }
+  }
+}

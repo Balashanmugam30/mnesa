@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Core Tokens (Dark) -->
+    <color name="mnesa_primary">#3B82F6</color>
+    <color name="mnesa_primary_variant">#2563EB</color>
+    <color name="mnesa_primary_light">#1E293B</color>
+    <color name="mnesa_on_primary">#FFFFFF</color>
+
+    <!-- Urgency & Status Tokens -->
+    <color name="mnesa_urgency_warning">#FBBF24</color>
+    <color name="mnesa_urgency_warning_light">#451A03</color>
+    <color name="mnesa_urgency_danger">#F87171</color>
+    <color name="mnesa_urgency_danger_light">#450A0A</color>
+    <color name="mnesa_status_success">#34D399</color>
+    <color name="mnesa_status_success_light">#064E3B</color>
+    <color name="mnesa_status_info">#38BDF8</color>
+    <color name="mnesa_status_info_light">#082F49</color>
+
+    <!-- Dark Theme Neutrals -->
+    <color name="mnesa_background">#0F172A</color>
+    <color name="mnesa_surface">#0F172A</color>
+    <color name="mnesa_surface_card">#1E293B</color>
+    <color name="mnesa_surface_elevated">#334155</color>
+    <color name="mnesa_border_subtle">#334155</color>
+    <color name="mnesa_border_strong">#475569</color>
+    <color name="mnesa_text_primary">#F8FAFC</color>
+    <color name="mnesa_text_secondary">#94A3B8</color>
+    <color name="mnesa_text_muted">#64748B</color>
+    <color name="mnesa_scrim">#B3000000</color>
+</resources>

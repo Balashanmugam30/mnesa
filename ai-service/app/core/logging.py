@@ -1,0 +1,16 @@
+import logging
+import sys
+from app.core.config import settings
+
+
+def configure_logging():
+    log_format = "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+        format=log_format,
+        handlers=[logging.StreamHandler(sys.stdout)],
+    )
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+
+
+logger = logging.getLogger("mnesa.ai")
