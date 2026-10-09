@@ -26,13 +26,22 @@ public class IntakeService {
     private final CaptureRepository captureRepository;
     private final IntakeJobRepository intakeJobRepository;
     private final UrlSanitizerService urlSanitizerService;
+    private final com.mnesa.backend.modules.ai.repository.AiExtractionRepository aiExtractionRepository;
+    private final com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public IntakeService(CaptureRepository captureRepository,
                          IntakeJobRepository intakeJobRepository,
-                         UrlSanitizerService urlSanitizerService) {
+                         UrlSanitizerService urlSanitizerService,
+                         com.mnesa.backend.modules.ai.repository.AiExtractionRepository aiExtractionRepository,
+                         com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository,
+                         com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.captureRepository = captureRepository;
         this.intakeJobRepository = intakeJobRepository;
         this.urlSanitizerService = urlSanitizerService;
+        this.aiExtractionRepository = aiExtractionRepository;
+        this.opportunityRepository = opportunityRepository;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -155,6 +164,114 @@ public class IntakeService {
         return intakeJobRepository.findById(jobId)
                 .filter(j -> j.getUserId().equals(userId))
                 .orElseThrow(() -> new MnesaException("Intake job not found", HttpStatus.NOT_FOUND, "JOB_NOT_FOUND"));
+    }
+
+    @Transactional(readOnly = true)
+    public com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse getIntakeJobStatus(UUID userId, UUID jobId) {
+        IntakeJob job = getIntakeJob(userId, jobId);
+
+        com.mnesa.backend.modules.intake.dto.AiExtractionDto extractionDto = null;
+        if (job.getStatus() == IntakeJobStatus.COMPLETED) {
+            java.util.Optional<com.mnesa.backend.modules.ai.domain.AiExtraction> extractionOpt = aiExtractionRepository.findByIntakeJobId(jobId);
+            if (extractionOpt.isPresent()) {
+                com.mnesa.backend.modules.ai.domain.AiExtraction ex = extractionOpt.get();
+                java.util.List<String> evidenceList = new java.util.ArrayList<>();
+                java.util.List<String> warningList = new java.util.ArrayList<>();
+                if (ex.getEvidenceSnippets() != null) {
+                    try {
+                        evidenceList = objectMapper.readValue(ex.getEvidenceSnippets(), new com.fasterxml.jackson.core.type.TypeReference<java.util.List<String>>() {});
+                    } catch (Exception ignored) {}
+                }
+                if (ex.getWarningMessages() != null) {
+                    try {
+                        warningList = objectMapper.readValue(ex.getWarningMessages(), new com.fasterxml.jackson.core.type.TypeReference<java.util.List<String>>() {});
+                    } catch (Exception ignored) {}
+                }
+
+                extractionDto = com.mnesa.backend.modules.intake.dto.AiExtractionDto.builder()
+                        .id(ex.getId())
+                        .title(ex.getTitle())
+                        .organization(ex.getOrganization())
+                        .category(ex.getCategory())
+                        .summary(ex.getSummary())
+                        .deadlineAt(ex.getDeadlineAt())
+                        .deadlineRaw(ex.getDeadlineRaw())
+                        .deadlineAmbiguous(ex.isDeadlineAmbiguous())
+                        .registrationUrl(ex.getRegistrationUrl())
+                        .location(ex.getLocation())
+                        .workMode(ex.getWorkMode() != null ? ex.getWorkMode().name() : null)
+                        .eligibility(ex.getEligibility())
+                        .estimatedEffortMinutes(ex.getEstimatedEffortMinutes())
+                        .priority(ex.getPriority() != null ? ex.getPriority().name() : "NORMAL")
+                        .priorityReason(ex.getPriorityReason())
+                        .overallConfidence(ex.getOverallConfidence())
+                        .validationStatus(ex.getValidationStatus() != null ? ex.getValidationStatus().name() : "SUCCEEDED")
+                        .evidenceSnippets(evidenceList)
+                        .warningMessages(warningList)
+                        .processingDurationMs(ex.getProcessingDurationMs())
+                        .build();
+            }
+        }
+
+        return com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse.builder()
+                .jobId(job.getId())
+                .captureId(job.getCaptureId())
+                .status(job.getStatus().name())
+                .attemptCount(job.getAttemptCount())
+                .errorMessage(job.getErrorMessage())
+                .createdAt(job.getCreatedAt())
+                .updatedAt(job.getUpdatedAt())
+                .extraction(extractionDto)
+                .build();
+    }
+
+    @Transactional
+    public com.mnesa.backend.modules.opportunity.domain.Opportunity confirmIntakeJob(UUID userId, UUID jobId, com.mnesa.backend.modules.intake.dto.ConfirmOpportunityRequest request) {
+        IntakeJob job = getIntakeJob(userId, jobId);
+        Capture capture = getCapture(userId, job.getCaptureId());
+
+        java.util.Optional<com.mnesa.backend.modules.ai.domain.AiExtraction> extractionOpt = aiExtractionRepository.findByIntakeJobId(jobId);
+
+        String title = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getTitle).orElse("Captured Opportunity");
+        if (request != null && request.getTitle() != null && !request.getTitle().isBlank()) {
+            title = request.getTitle().trim();
+        }
+
+        String organization = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getOrganization).orElse(null);
+        if (request != null && request.getOrganization() != null && !request.getOrganization().isBlank()) {
+            organization = request.getOrganization().trim();
+        }
+
+        String category = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getCategory).orElse("OTHER");
+        if (request != null && request.getCategory() != null && !request.getCategory().isBlank()) {
+            category = request.getCategory().trim().toUpperCase();
+        }
+
+        com.mnesa.backend.modules.opportunity.domain.OpportunityType oppType = com.mnesa.backend.modules.opportunity.domain.OpportunityType.OTHER;
+        try {
+            oppType = com.mnesa.backend.modules.opportunity.domain.OpportunityType.valueOf(category);
+        } catch (IllegalArgumentException ignored) {}
+
+        java.time.Instant deadlineAt = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getDeadlineAt).orElse(null);
+        if (request != null && request.getDeadlineAt() != null) {
+            deadlineAt = request.getDeadlineAt();
+        }
+
+        java.math.BigDecimal confidence = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getOverallConfidence).orElse(java.math.BigDecimal.valueOf(0.8));
+
+        com.mnesa.backend.modules.opportunity.domain.Opportunity opportunity = com.mnesa.backend.modules.opportunity.domain.Opportunity.builder()
+                .userId(userId)
+                .title(title)
+                .organization(organization)
+                .opportunityType(oppType)
+                .sourceUrl(capture.getCanonicalUrl() != null ? capture.getCanonicalUrl() : capture.getOriginalUrl())
+                .rawContent(capture.getOriginalText())
+                .status(com.mnesa.backend.modules.opportunity.domain.OpportunityStatus.SAVED)
+                .deadlineAt(deadlineAt)
+                .confidenceScore(confidence)
+                .build();
+
+        return opportunityRepository.save(opportunity);
     }
 
     private SourceType classifySource(IntakeRequest request, String canonicalUrl, boolean hasMedia, boolean hasText) {

@@ -56,7 +56,41 @@ public class CaptureViewModelTest {
     }
 
     @Test
-    public void testProcessIncomingIntentSuccessfulIntake() {
+    public void testProcessIncomingIntentSuccessfulIntakeAcknowledgedWithoutJob() {
+        IntakePayload validPayload = new IntakePayload(
+                "https://careers.google.com/jobs/123",
+                "https://careers.google.com/jobs/123",
+                "careers.google.com",
+                "URL",
+                null,
+                "text/plain",
+                0,
+                true,
+                null
+        );
+
+        IntakeResponseDto responseDto = new IntakeResponseDto();
+        responseDto.setCaptureId("cap-123");
+        responseDto.setJobId(null);
+        responseDto.setStatus("RECEIVED");
+        responseDto.setMessage("Opportunity captured and queued");
+        responseDto.setDuplicate(false);
+
+        when(parser.parse(any(), any())).thenReturn(validPayload);
+        when(repository.processAndSubmit(eq(validPayload), any())).thenReturn(Single.just(responseDto));
+
+        viewModel.processIncomingIntent(intent, null);
+
+        CaptureUiState state = viewModel.getUiState().getValue();
+        assertNotNull(state);
+        assertEquals(CaptureState.ACKNOWLEDGED, state.getState());
+        assertTrue(state.isSuccess());
+        assertFalse(state.isDuplicate());
+        assertEquals("Opportunity Captured!", state.getSubtitle());
+    }
+
+    @Test
+    public void testProcessIncomingIntentWithJobStartsAnalyzing() {
         IntakePayload validPayload = new IntakePayload(
                 "https://careers.google.com/jobs/123",
                 "https://careers.google.com/jobs/123",
@@ -78,15 +112,15 @@ public class CaptureViewModelTest {
 
         when(parser.parse(any(), any())).thenReturn(validPayload);
         when(repository.processAndSubmit(eq(validPayload), any())).thenReturn(Single.just(responseDto));
+        when(repository.pollJobStatus(eq("job-456"))).thenReturn(Single.never());
 
         viewModel.processIncomingIntent(intent, null);
 
         CaptureUiState state = viewModel.getUiState().getValue();
         assertNotNull(state);
-        assertEquals(CaptureState.ACKNOWLEDGED, state.getState());
-        assertTrue(state.isSuccess());
-        assertFalse(state.isDuplicate());
-        assertEquals("Opportunity Captured!", state.getSubtitle());
+        assertEquals(CaptureState.ANALYZING, state.getState());
+        assertEquals("Analyzing with MNESA AI...", state.getSubtitle());
+        assertTrue(state.isProgressVisible());
     }
 
     @Test
@@ -162,5 +196,42 @@ public class CaptureViewModelTest {
         assertNotNull(state);
         assertEquals(CaptureState.UNSUPPORTED, state.getState());
         assertTrue(state.isError());
+    }
+
+    @Test
+    public void testConfirmOpportunitySetsConfirmedState() {
+        IntakePayload validPayload = new IntakePayload(
+                "https://careers.google.com/jobs/123",
+                "https://careers.google.com/jobs/123",
+                "careers.google.com",
+                "URL",
+                null,
+                "text/plain",
+                0,
+                true,
+                null
+        );
+
+        IntakeResponseDto responseDto = new IntakeResponseDto();
+        responseDto.setCaptureId("cap-123");
+        responseDto.setJobId("job-456");
+        responseDto.setStatus("RECEIVED");
+        responseDto.setMessage("Opportunity captured and queued");
+        responseDto.setDuplicate(false);
+
+        when(parser.parse(any(), any())).thenReturn(validPayload);
+        when(repository.processAndSubmit(eq(validPayload), any())).thenReturn(Single.just(responseDto));
+        when(repository.pollJobStatus(eq("job-456"))).thenReturn(Single.never());
+        when(repository.confirmOpportunity(eq("job-456"), any())).thenReturn(Single.just(true));
+
+        viewModel.processIncomingIntent(intent, null);
+        viewModel.confirmOpportunity("Software Engineering Intern", "INTERNSHIP", "2026-11-01");
+
+        CaptureUiState state = viewModel.getUiState().getValue();
+        assertNotNull(state);
+        assertEquals(CaptureState.CONFIRMED, state.getState());
+        assertEquals("Software Engineering Intern", state.getTitle());
+        assertEquals("INTERNSHIP", state.getCategory());
+        assertTrue(state.isSuccess());
     }
 }

@@ -87,6 +87,7 @@
 
             <!-- Preview Card -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardPreview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mnesa_space_4"
@@ -103,6 +104,83 @@
                     android:padding="@dimen/mnesa_space_3"
                     android:textColor="@color/mnesa_text_secondary"
                     android:textSize="14sp" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- AI Extraction Details Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardExtraction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/mnesa_space_3"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/mnesa_surface"
+                app:cardCornerRadius="@dimen/mnesa_radius_md"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/mnesa_space_3">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txtExtractedOrg"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/mnesa_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/badgeConfidence"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_badge_pill"
+                            android:paddingStart="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="2dp"
+                            android:textColor="@color/mnesa_status_success"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/txtExtractedDeadline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/mnesa_urgency_warning"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtExtractedSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="3"
+                        android:textColor="@color/mnesa_text_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/txtEvidenceSnippet"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/mnesa_text_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Capture Status Indicator -->
@@ -131,6 +209,16 @@
                     android:layout_marginEnd="@dimen/mnesa_space_3"
                     android:layout_weight="1"
                     android:text="@string/capture_action_retry"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnConfirmOpportunity"
+                    style="@style/Widget.Mnesa.Button.Primary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/mnesa_space_3"
+                    android:layout_weight="1"
+                    android:text="@string/capture_confirm"
                     android:visibility="gone" />
 
                 <Button

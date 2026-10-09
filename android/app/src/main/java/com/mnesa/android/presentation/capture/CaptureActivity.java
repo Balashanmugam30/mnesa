@@ -28,6 +28,7 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
 
         binding.btnDone.setOnClickListener(v -> finish());
         binding.btnRetry.setOnClickListener(v -> viewModel.retry());
+        binding.btnConfirmOpportunity.setOnClickListener(v -> viewModel.confirmOpportunity(null, null, null));
         binding.captureRoot.setOnClickListener(v -> finish());
 
         handleIncomingIntent(getIntent());
@@ -42,6 +43,44 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
             binding.txtCapturedPreview.setText(state.getTitle());
             binding.badgeSourceType.setText(state.getSourceBadge());
             binding.txtCaptureStatus.setText(state.getStatusMessage());
+
+            if (state.isExtractionReady()) {
+                binding.cardExtraction.setVisibility(View.VISIBLE);
+                String org = state.getOrganization();
+                binding.txtExtractedOrg.setText(org != null && !org.isBlank() ? org : state.getCategory());
+                binding.badgeConfidence.setText(state.getConfidencePill());
+
+                if (state.getConfidenceScore() >= 0.85f) {
+                    binding.badgeConfidence.setTextColor(ContextCompat.getColor(this, R.color.mnesa_status_success));
+                } else if (state.getConfidenceScore() >= 0.50f) {
+                    binding.badgeConfidence.setTextColor(ContextCompat.getColor(this, R.color.mnesa_urgency_warning));
+                } else {
+                    binding.badgeConfidence.setTextColor(ContextCompat.getColor(this, R.color.mnesa_error));
+                }
+
+                if (state.getDeadlineFormatted() != null) {
+                    binding.txtExtractedDeadline.setVisibility(View.VISIBLE);
+                    binding.txtExtractedDeadline.setText(getString(R.string.capture_deadline_label, state.getDeadlineFormatted()));
+                } else {
+                    binding.txtExtractedDeadline.setVisibility(View.GONE);
+                }
+
+                if (state.getSummary() != null && !state.getSummary().isBlank()) {
+                    binding.txtExtractedSummary.setVisibility(View.VISIBLE);
+                    binding.txtExtractedSummary.setText(state.getSummary());
+                } else {
+                    binding.txtExtractedSummary.setVisibility(View.GONE);
+                }
+
+                if (state.getEvidenceSnippet() != null && !state.getEvidenceSnippet().isBlank()) {
+                    binding.txtEvidenceSnippet.setVisibility(View.VISIBLE);
+                    binding.txtEvidenceSnippet.setText(getString(R.string.capture_evidence_label, state.getEvidenceSnippet()));
+                } else {
+                    binding.txtEvidenceSnippet.setVisibility(View.GONE);
+                }
+            } else {
+                binding.cardExtraction.setVisibility(View.GONE);
+            }
 
             if (state.isProgressVisible()) {
                 binding.progressSpinner.setVisibility(View.VISIBLE);
@@ -70,6 +109,7 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
             }
 
             binding.btnRetry.setVisibility(state.canRetry() ? View.VISIBLE : View.GONE);
+            binding.btnConfirmOpportunity.setVisibility(state.canConfirm() ? View.VISIBLE : View.GONE);
         });
     }
 

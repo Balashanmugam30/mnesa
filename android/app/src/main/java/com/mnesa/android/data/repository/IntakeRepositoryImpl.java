@@ -205,6 +205,29 @@ public class IntakeRepositoryImpl implements IntakeRepository {
         return captureDao.getCapturesForUser(userId);
     }
 
+    @Override
+    public Single<com.mnesa.android.data.remote.dto.IntakeJobStatusDto> pollJobStatus(String jobId) {
+        if (jobId == null || jobId.isBlank()) {
+            return Single.error(new IllegalArgumentException("Job ID cannot be null or empty"));
+        }
+        return apiService.getJobStatus(jobId)
+                .map(response -> {
+                    if (response.getData() != null) {
+                        return response.getData();
+                    }
+                    throw new IllegalStateException("Empty job status response");
+                });
+    }
+
+    @Override
+    public Single<Boolean> confirmOpportunity(String jobId, com.mnesa.android.data.remote.dto.ConfirmOpportunityRequestDto request) {
+        if (jobId == null || jobId.isBlank()) {
+            return Single.error(new IllegalArgumentException("Job ID cannot be null or empty"));
+        }
+        return apiService.confirmJob(jobId, request)
+                .map(com.mnesa.android.data.remote.dto.ApiResponseDto::isSuccess);
+    }
+
     private io.reactivex.rxjava3.core.Completable enqueueOfflineSync(CaptureEntity capture, OpportunityEntity opp, IntakeRequestDto request) {
         String operationId = UUID.randomUUID().toString();
         String payloadJson = gson.toJson(request);

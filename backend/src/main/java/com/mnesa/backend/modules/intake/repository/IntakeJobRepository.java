@@ -1,9 +1,11 @@
 package com.mnesa.backend.modules.intake.repository;
 
 import com.mnesa.backend.modules.intake.domain.IntakeJob;
+import com.mnesa.backend.modules.intake.domain.IntakeJobStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,4 +16,8 @@ public interface IntakeJobRepository extends JpaRepository<IntakeJob, UUID> {
     Optional<IntakeJob> findByCaptureId(UUID captureId);
 
     List<IntakeJob> findByUserIdOrderByCreatedAtDesc(UUID userId);
+
+    List<IntakeJob> findTop5ByStatusOrderByCreatedAtAsc(IntakeJobStatus status);
+
+    List<IntakeJob> findByStatusAndUpdatedAtBefore(IntakeJobStatus status, Instant cutoff);
 }

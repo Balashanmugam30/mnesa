@@ -144,4 +144,75 @@ class IntakeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
     }
+
+    @Test
+    @DisplayName("GET /api/v1/intake/jobs/{jobId} returns enriched status with extraction proposal")
+    void getIntakeJobStatusSuccess() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        UserPrincipal principal = UserPrincipal.create(userId, "student@mnesa.ai", "USER");
+
+        com.mnesa.backend.modules.intake.dto.AiExtractionDto extractionDto = com.mnesa.backend.modules.intake.dto.AiExtractionDto.builder()
+                .id(UUID.randomUUID())
+                .title("Software Engineering Internship")
+                .organization("Meta")
+                .category("INTERNSHIP")
+                .summary("Summer internship program.")
+                .overallConfidence(java.math.BigDecimal.valueOf(0.95))
+                .validationStatus("SUCCEEDED")
+                .priority("NORMAL")
+                .build();
+
+        com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse response = com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse.builder()
+                .jobId(jobId)
+                .captureId(UUID.randomUUID())
+                .status("COMPLETED")
+                .attemptCount(1)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .extraction(extractionDto)
+                .build();
+
+        when(intakeService.getIntakeJobStatus(eq(userId), eq(jobId))).thenReturn(response);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/v1/intake/jobs/" + jobId)
+                        .with(SecurityMockMvcRequestPostProcessors.user(principal)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.job_id").value(jobId.toString()))
+                .andExpect(jsonPath("$.data.status").value("COMPLETED"))
+                .andExpect(jsonPath("$.data.extraction.title").value("Software Engineering Internship"))
+                .andExpect(jsonPath("$.data.extraction.organization").value("Meta"));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/intake/jobs/{jobId}/confirm saves opportunity and returns 200 OK")
+    void confirmIntakeJobSuccess() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID jobId = UUID.randomUUID();
+        UserPrincipal principal = UserPrincipal.create(userId, "student@mnesa.ai", "USER");
+
+        com.mnesa.backend.modules.opportunity.domain.Opportunity savedOpp = com.mnesa.backend.modules.opportunity.domain.Opportunity.builder()
+                .id(UUID.randomUUID())
+                .userId(userId)
+                .title("Confirmed AI Internship")
+                .status(com.mnesa.backend.modules.opportunity.domain.OpportunityStatus.SAVED)
+                .confidenceScore(java.math.BigDecimal.valueOf(0.92))
+                .build();
+
+        when(intakeService.confirmIntakeJob(eq(userId), eq(jobId), any())).thenReturn(savedOpp);
+
+        com.mnesa.backend.modules.intake.dto.ConfirmOpportunityRequest request = com.mnesa.backend.modules.intake.dto.ConfirmOpportunityRequest.builder()
+                .title("Confirmed AI Internship")
+                .build();
+
+        mockMvc.perform(post("/api/v1/intake/jobs/" + jobId + "/confirm")
+                        .with(SecurityMockMvcRequestPostProcessors.user(principal))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.title").value("Confirmed AI Internship"))
+                .andExpect(jsonPath("$.data.status").value("SAVED"));
+    }
 }

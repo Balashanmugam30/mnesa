@@ -3,7 +3,7 @@ package com.mnesa.android.presentation.capture;
 import com.mnesa.android.domain.model.CaptureState;
 
 /**
- * Immutable UI model representing the complete visual state of the Capture sheet.
+ * Immutable UI model representing the complete visual state of the Capture & AI Extraction sheet.
  */
 public class CaptureUiState {
 
@@ -19,6 +19,19 @@ public class CaptureUiState {
     private final boolean error;
     private final boolean canRetry;
 
+    // AI Extraction specific fields
+    private final String organization;
+    private final String category;
+    private final String summary;
+    private final String deadlineFormatted;
+    private final boolean deadlineAmbiguous;
+    private final String confidencePill;
+    private final float confidenceScore;
+    private final String evidenceSnippet;
+    private final String jobId;
+    private final boolean extractionReady;
+    private final boolean canConfirm;
+
     public CaptureUiState(CaptureState state,
                           String title,
                           String subtitle,
@@ -29,7 +42,18 @@ public class CaptureUiState {
                           boolean duplicate,
                           boolean offline,
                           boolean error,
-                          boolean canRetry) {
+                          boolean canRetry,
+                          String organization,
+                          String category,
+                          String summary,
+                          String deadlineFormatted,
+                          boolean deadlineAmbiguous,
+                          String confidencePill,
+                          float confidenceScore,
+                          String evidenceSnippet,
+                          String jobId,
+                          boolean extractionReady,
+                          boolean canConfirm) {
         this.state = state;
         this.title = title;
         this.subtitle = subtitle;
@@ -41,6 +65,17 @@ public class CaptureUiState {
         this.offline = offline;
         this.error = error;
         this.canRetry = canRetry;
+        this.organization = organization;
+        this.category = category;
+        this.summary = summary;
+        this.deadlineFormatted = deadlineFormatted;
+        this.deadlineAmbiguous = deadlineAmbiguous;
+        this.confidencePill = confidencePill;
+        this.confidenceScore = confidenceScore;
+        this.evidenceSnippet = evidenceSnippet;
+        this.jobId = jobId;
+        this.extractionReady = extractionReady;
+        this.canConfirm = canConfirm;
     }
 
     public static CaptureUiState validating() {
@@ -50,7 +85,8 @@ public class CaptureUiState {
                 "Reading shared opportunity content",
                 "DETECTING",
                 "Analyzing payload structure...",
-                true, false, false, false, false, false
+                true, false, false, false, false, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -61,7 +97,54 @@ public class CaptureUiState {
                 "Saving to MNESA...",
                 badge,
                 "Dispatching to intelligent capture pipeline...",
-                true, false, false, false, false, false
+                true, false, false, false, false, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
+        );
+    }
+
+    public static CaptureUiState analyzing(String title, String badge, String jobId) {
+        return new CaptureUiState(
+                CaptureState.ANALYZING,
+                title,
+                "Analyzing with MNESA AI...",
+                badge,
+                "Safely extracting key facts, requirements, and deadlines...",
+                true, false, false, false, false, false,
+                null, null, null, null, false, "Analyzing...", 0f, null, jobId, false, false
+        );
+    }
+
+    public static CaptureUiState extractionSuccess(String title,
+                                                   String organization,
+                                                   String category,
+                                                   String summary,
+                                                   String deadlineFormatted,
+                                                   boolean deadlineAmbiguous,
+                                                   String confidencePill,
+                                                   float confidenceScore,
+                                                   String evidenceSnippet,
+                                                   String jobId) {
+        return new CaptureUiState(
+                CaptureState.EXTRACTION_SUCCESS,
+                title,
+                organization != null ? organization : "Opportunity Extracted",
+                category != null ? category : "OPPORTUNITY",
+                "Opportunity details extracted and verified.",
+                false, true, false, false, false, false,
+                organization, category, summary, deadlineFormatted, deadlineAmbiguous,
+                confidencePill, confidenceScore, evidenceSnippet, jobId, true, true
+        );
+    }
+
+    public static CaptureUiState confirmed(String title, String category) {
+        return new CaptureUiState(
+                CaptureState.CONFIRMED,
+                title,
+                "Opportunity Saved!",
+                category != null ? category : "SAVED",
+                "Successfully saved to your active opportunities.",
+                false, true, false, false, false, false,
+                null, category, null, null, false, "Saved", 1.0f, null, null, false, false
         );
     }
 
@@ -72,7 +155,8 @@ public class CaptureUiState {
                 duplicate ? "Previously Captured" : "Opportunity Captured!",
                 badge,
                 message != null ? message : (duplicate ? "You already saved this opportunity" : "Captured and scheduled for analysis"),
-                false, true, duplicate, false, false, false
+                false, true, duplicate, false, false, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -83,7 +167,8 @@ public class CaptureUiState {
                 "Saved Offline",
                 badge,
                 "Device is offline. Opportunity saved locally and will sync automatically.",
-                false, true, false, true, false, false
+                false, true, false, true, false, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -94,7 +179,8 @@ public class CaptureUiState {
                 "Queued for Background Sync",
                 badge,
                 errorMsg != null ? errorMsg : "Connection interrupted. Queued in local sync queue.",
-                false, true, false, true, true, true
+                false, true, false, true, true, true,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -105,7 +191,8 @@ public class CaptureUiState {
                 "Cannot Capture",
                 "INVALID",
                 reason != null ? reason : "Shared content format cannot be captured.",
-                false, false, false, false, true, false
+                false, false, false, false, true, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -116,7 +203,8 @@ public class CaptureUiState {
                 "Error",
                 "ERROR",
                 reason != null ? reason : "An error occurred while saving the opportunity.",
-                false, false, false, false, true, false
+                false, false, false, false, true, false,
+                null, null, null, null, false, null, 0f, null, null, false, false
         );
     }
 
@@ -131,4 +219,15 @@ public class CaptureUiState {
     public boolean isOffline() { return offline; }
     public boolean isError() { return error; }
     public boolean canRetry() { return canRetry; }
+    public String getOrganization() { return organization; }
+    public String getCategory() { return category; }
+    public String getSummary() { return summary; }
+    public String getDeadlineFormatted() { return deadlineFormatted; }
+    public boolean isDeadlineAmbiguous() { return deadlineAmbiguous; }
+    public String getConfidencePill() { return confidencePill; }
+    public float getConfidenceScore() { return confidenceScore; }
+    public String getEvidenceSnippet() { return evidenceSnippet; }
+    public String getJobId() { return jobId; }
+    public boolean isExtractionReady() { return extractionReady; }
+    public boolean canConfirm() { return canConfirm; }
 }

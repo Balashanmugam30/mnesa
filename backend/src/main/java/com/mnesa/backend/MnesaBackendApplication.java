@@ -3,10 +3,13 @@ package com.mnesa.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 /**
  * Main application entry point for the MNESA Modular Monolith backend.
  */
 @SpringBootApplication
+@EnableScheduling
 public class MnesaBackendApplication {
 
     public static void main(String[] args) {

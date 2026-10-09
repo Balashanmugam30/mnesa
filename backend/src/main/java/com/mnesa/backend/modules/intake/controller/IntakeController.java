@@ -53,12 +53,23 @@ public class IntakeController {
     }
 
     @GetMapping("/jobs/{jobId}")
-    @Operation(summary = "Get intake job status", description = "Retrieves processing status of an asynchronous intake job")
-    public ResponseEntity<ApiResponse<IntakeJob>> getIntakeJob(
+    @Operation(summary = "Get intake job status", description = "Retrieves processing status and extraction proposal of an asynchronous intake job")
+    public ResponseEntity<ApiResponse<com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse>> getIntakeJob(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID jobId) {
 
-        IntakeJob job = intakeService.getIntakeJob(principal.getId(), jobId);
-        return ResponseEntity.ok(ApiResponse.ok(job));
+        com.mnesa.backend.modules.intake.dto.IntakeJobStatusResponse statusResponse = intakeService.getIntakeJobStatus(principal.getId(), jobId);
+        return ResponseEntity.ok(ApiResponse.ok(statusResponse));
+    }
+
+    @PostMapping("/jobs/{jobId}/confirm")
+    @Operation(summary = "Confirm extracted opportunity", description = "Promotes extracted proposal to a saved opportunity with optional user adjustments")
+    public ResponseEntity<ApiResponse<com.mnesa.backend.modules.opportunity.domain.Opportunity>> confirmIntakeJob(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable UUID jobId,
+            @RequestBody(required = false) com.mnesa.backend.modules.intake.dto.ConfirmOpportunityRequest request) {
+
+        com.mnesa.backend.modules.opportunity.domain.Opportunity opportunity = intakeService.confirmIntakeJob(principal.getId(), jobId, request);
+        return ResponseEntity.ok(ApiResponse.ok(opportunity, "Opportunity successfully saved"));
     }
 }

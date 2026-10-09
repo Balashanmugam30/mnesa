@@ -1,7 +1,7 @@
 package com.mnesa.android.domain.model;
 
 /**
- * State machine stages for the Android Share Intake pipeline.
+ * State machine stages for the Android Share Intake and AI Extraction pipeline.
  */
 public enum CaptureState {
     RECEIVED,
@@ -10,6 +10,9 @@ public enum CaptureState {
     QUEUED_OFFLINE,
     SUBMITTING,
     ACKNOWLEDGED,
+    ANALYZING,
+    EXTRACTION_SUCCESS,
+    CONFIRMED,
     DUPLICATE,
     UNSUPPORTED,
     RETRYABLE_FAILURE,

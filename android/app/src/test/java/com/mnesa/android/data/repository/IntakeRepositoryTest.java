@@ -119,4 +119,42 @@ public class IntakeRepositoryTest {
         verify(opportunityDao, times(1)).insertOpportunity(any());
         verify(opportunityDao, times(1)).updateOpportunity(any());
     }
+
+    @Test
+    public void testPollJobStatusSuccess() {
+        com.mnesa.android.data.remote.dto.IntakeJobStatusDto statusDto = new com.mnesa.android.data.remote.dto.IntakeJobStatusDto();
+        statusDto.setJobId("job-status-123");
+        statusDto.setStatus("COMPLETED");
+
+        ApiResponseDto<com.mnesa.android.data.remote.dto.IntakeJobStatusDto> apiResponse = new ApiResponseDto<>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(statusDto);
+
+        when(apiService.getJobStatus("job-status-123")).thenReturn(Single.just(apiResponse));
+
+        com.mnesa.android.data.remote.dto.IntakeJobStatusDto result = repository.pollJobStatus("job-status-123").blockingGet();
+
+        assertNotNull(result);
+        assertEquals("job-status-123", result.getJobId());
+        assertEquals("COMPLETED", result.getStatus());
+        verify(apiService, times(1)).getJobStatus("job-status-123");
+    }
+
+    @Test
+    public void testConfirmOpportunitySuccess() {
+        com.mnesa.android.data.remote.dto.ConfirmOpportunityRequestDto requestDto =
+                new com.mnesa.android.data.remote.dto.ConfirmOpportunityRequestDto("My Opp", "Google", "INTERNSHIP", null, null);
+
+        ApiResponseDto<Object> apiResponse = new ApiResponseDto<>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData("Confirmed");
+
+        when(apiService.confirmJob(eq("job-status-123"), any())).thenReturn(Single.just(apiResponse));
+
+        Boolean result = repository.confirmOpportunity("job-status-123", requestDto).blockingGet();
+
+        assertNotNull(result);
+        assertTrue(result);
+        verify(apiService, times(1)).confirmJob(eq("job-status-123"), any());
+    }
 }

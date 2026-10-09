@@ -17,6 +17,10 @@
     <string name="capture_success">Opportunity captured! We\'ll remember.</string>
     <string name="capture_view_details">View Details</string>
     <string name="capture_done">Done</string>
+    <string name="capture_confirm">Confirm &amp; Save</string>
+    <string name="capture_analyzing">Analyzing with MNESA AI…</string>
+    <string name="capture_deadline_label">Deadline: %1$s</string>
+    <string name="capture_evidence_label">Source snippet: %1$s</string>
     <string name="capture_title_capturing">Capturing Opportunity…</string>
     <string name="capture_title_captured">Opportunity Captured!</string>
     <string name="capture_title_queued">Saved Offline</string>
