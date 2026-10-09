@@ -38,6 +38,7 @@ public class IntakeJobProcessor {
     private final AiExtractionRepository aiExtractionRepository;
     private final OpportunityRepository opportunityRepository;
     private final ObjectMapper objectMapper;
+    private final com.mnesa.backend.modules.ai.repository.AiCandidateRepository aiCandidateRepository;
 
     public IntakeJobProcessor(IntakeJobRepository intakeJobRepository,
                               CaptureRepository captureRepository,
@@ -45,13 +46,27 @@ public class IntakeJobProcessor {
                               AiExtractionRepository aiExtractionRepository,
                               OpportunityRepository opportunityRepository,
                               ObjectMapper objectMapper) {
+        this(intakeJobRepository, captureRepository, aiServiceClient, aiExtractionRepository, opportunityRepository, objectMapper, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public IntakeJobProcessor(IntakeJobRepository intakeJobRepository,
+                              CaptureRepository captureRepository,
+                              AiServiceClient aiServiceClient,
+                              AiExtractionRepository aiExtractionRepository,
+                              OpportunityRepository opportunityRepository,
+                              ObjectMapper objectMapper,
+                              com.mnesa.backend.modules.ai.repository.AiCandidateRepository aiCandidateRepository) {
+
         this.intakeJobRepository = intakeJobRepository;
         this.captureRepository = captureRepository;
         this.aiServiceClient = aiServiceClient;
         this.aiExtractionRepository = aiExtractionRepository;
         this.opportunityRepository = opportunityRepository;
         this.objectMapper = objectMapper;
+        this.aiCandidateRepository = aiCandidateRepository;
     }
+
 
     /**
      * Claims and processes a single pending job.
@@ -90,6 +105,75 @@ public class IntakeJobProcessor {
         capture.setStatus(CaptureStatus.PROCESSING);
         captureRepository.save(capture);
 
+        // Branch 1: Screenshot / Image OCR extraction
+        if (capture.getSourceType() == SourceType.IMAGE && capture.getMetadata() != null && !capture.getMetadata().isBlank()) {
+            com.mnesa.backend.modules.ai.dto.ImageExtractionRequestDto imgReq =
+                    com.mnesa.backend.modules.ai.dto.ImageExtractionRequestDto.builder()
+                            .imageBase64(capture.getMetadata())
+                            .imageMimeType(capture.getMediaMimeType() != null ? capture.getMediaMimeType() : "image/png")
+                            .userNotes(capture.getOriginalText())
+                            .sourceUrl(capture.getCanonicalUrl())
+                            .build();
+
+            long startTime = System.currentTimeMillis();
+            com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto imgResult = aiServiceClient.extractImage(imgReq);
+            long duration = System.currentTimeMillis() - startTime;
+
+            if (imgResult.isSuccess() && (imgResult.getPrimaryOpportunity() != null || (imgResult.getCandidates() != null && !imgResult.getCandidates().isEmpty()))) {
+                ExtractedOpportunityDto primary = imgResult.getPrimaryOpportunity() != null
+                        ? imgResult.getPrimaryOpportunity()
+                        : imgResult.getCandidates().get(0);
+
+                ExtractionResultDto extractionResult = ExtractionResultDto.builder()
+                        .success(true)
+                        .opportunity(primary)
+                        .providerUsed(imgResult.getProviderUsed())
+                        .latencyMs(imgResult.getLatencyMs())
+                        .sanitizationFlags(imgResult.getSanitizationFlags())
+                        .validationStatus(imgResult.getValidationStatus())
+                        .build();
+
+                AiExtraction extraction = handleSuccessfulExtraction(job, capture, extractionResult, duration);
+
+                if (aiCandidateRepository != null && imgResult.getCandidates() != null && !imgResult.getCandidates().isEmpty()) {
+                    int idx = 0;
+                    for (ExtractedOpportunityDto cDto : imgResult.getCandidates()) {
+                        String cTitle = (cDto.getTitle() != null && cDto.getTitle().getValue() != null)
+                                ? cDto.getTitle().getValue()
+                                : "Opportunity Proposal";
+                        String cOrg = cDto.getOrganization() != null ? cDto.getOrganization().getValue() : null;
+                        String cCat = (cDto.getCategory() != null && cDto.getCategory().getValue() != null)
+                                ? cDto.getCategory().getValue()
+                                : "OTHER";
+                        Instant cDeadline = cDto.getDeadline() != null ? cDto.getDeadline().getValue() : null;
+                        String cDeadlineRaw = cDto.getDeadline() != null ? cDto.getDeadline().getRawText() : null;
+
+                        aiCandidateRepository.save(com.mnesa.backend.modules.ai.domain.AiCandidate.builder()
+                                .extractionId(extraction.getId())
+                                .candidateIndex(idx++)
+                                .title(cTitle)
+                                .organization(cOrg)
+                                .category(cCat)
+                                .summary(cDto.getSummary())
+                                .deadlineAt(cDeadline)
+                                .deadlineRaw(cDeadlineRaw)
+                                .confidenceScore(BigDecimal.valueOf(cDto.getOverallConfidence() != null ? cDto.getOverallConfidence() : 0.8))
+                                .build());
+                    }
+                }
+                return;
+            } else {
+                ExtractionResultDto failDto = ExtractionResultDto.builder()
+                        .success(false)
+                        .errorMessage(imgResult.getErrorMessage() != null ? imgResult.getErrorMessage() : "OCR image extraction failed")
+                        .validationStatus(imgResult.getValidationStatus())
+                        .build();
+                handleFailedExtraction(job, capture, failDto);
+                return;
+            }
+        }
+
+        // Branch 2: Web URL / Text extraction
         FetchAndExtractRequestDto request = FetchAndExtractRequestDto.builder()
                 .url(capture.getCanonicalUrl() != null ? capture.getCanonicalUrl() : capture.getOriginalUrl())
                 .rawText(capture.getOriginalText())
@@ -106,7 +190,8 @@ public class IntakeJobProcessor {
         }
     }
 
-    private void handleSuccessfulExtraction(IntakeJob job, Capture capture, ExtractionResultDto result, long duration) {
+    private AiExtraction handleSuccessfulExtraction(IntakeJob job, Capture capture, ExtractionResultDto result, long duration) {
+
         ExtractedOpportunityDto opp = result.getOpportunity();
 
         String title = (opp.getTitle() != null && opp.getTitle().getValue() != null && !opp.getTitle().getValue().isBlank())
@@ -232,7 +317,9 @@ public class IntakeJobProcessor {
 
         log.info("Intake job [{}] completed successfully. Saved AiExtraction [{}] and Opportunity [{}]",
                 job.getId(), extraction.getId(), opportunity.getId());
+        return extraction;
     }
+
 
     private void handleFailedExtraction(IntakeJob job, Capture capture, ExtractionResultDto result) {
         String errMsg = result.getErrorMessage() != null ? result.getErrorMessage() : "Unknown AI extraction error";

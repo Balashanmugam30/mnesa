@@ -102,8 +102,8 @@ public class CaptureViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         statusDto -> {
-                            if ("COMPLETED".equalsIgnoreCase(statusDto.getStatus()) && statusDto.getExtraction() != null) {
-                                handleExtractionCompleted(statusDto.getExtraction(), defaultTitle, jobId);
+                            if ("COMPLETED".equalsIgnoreCase(statusDto.getStatus()) && (statusDto.getExtraction() != null || !statusDto.getCandidates().isEmpty())) {
+                                handleExtractionCompleted(statusDto.getExtraction(), statusDto.getCandidates(), defaultTitle, jobId);
                                 if (pollingDisposable != null) {
                                     pollingDisposable.dispose();
                                 }
@@ -127,12 +127,49 @@ public class CaptureViewModel extends BaseViewModel {
         addDisposable(pollingDisposable);
     }
 
-    private void handleExtractionCompleted(AiExtractionDto extraction, String fallbackTitle, String jobId) {
-        String title = extraction.getTitle() != null && !extraction.getTitle().isBlank()
+    private void handleExtractionCompleted(AiExtractionDto extraction,
+                                            java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> candidates,
+                                            String fallbackTitle,
+                                            String jobId) {
+        String title = extraction != null && extraction.getTitle() != null && !extraction.getTitle().isBlank()
                 ? extraction.getTitle()
                 : fallbackTitle;
+        String org = extraction != null ? extraction.getOrganization() : null;
+        String category = extraction != null ? extraction.getCategory() : "OPPORTUNITY";
+        String summary = extraction != null ? extraction.getSummary() : null;
+        String deadlineText = null;
+        boolean deadlineAmbiguous = false;
+        float conf = 0.85f;
+        String evidence = null;
 
-        float conf = extraction.getOverallConfidence() != null ? extraction.getOverallConfidence() : 0.85f;
+        if (extraction != null) {
+            conf = extraction.getOverallConfidence() != null ? extraction.getOverallConfidence() : 0.85f;
+            deadlineText = extraction.getDeadlineRaw() != null && !extraction.getDeadlineRaw().isBlank()
+                    ? extraction.getDeadlineRaw()
+                    : (extraction.getDeadlineAt() != null ? extraction.getDeadlineAt() : "No deadline detected");
+            deadlineAmbiguous = extraction.isDeadlineAmbiguous();
+            evidence = extraction.getEvidenceSnippets() != null && !extraction.getEvidenceSnippets().isEmpty()
+                    ? extraction.getEvidenceSnippets().get(0)
+                    : null;
+        }
+
+        com.mnesa.android.data.remote.dto.AiCandidateDto selected = null;
+        if (candidates != null && !candidates.isEmpty()) {
+            selected = candidates.get(0);
+            if (title == null || title.equals(fallbackTitle)) {
+                title = selected.getTitle();
+            }
+            if (org == null) {
+                org = selected.getOrganization();
+            }
+            if (category == null || "OPPORTUNITY".equals(category)) {
+                category = selected.getCategory();
+            }
+            if (summary == null) {
+                summary = selected.getSummary();
+            }
+        }
+
         String confPill;
         if (conf >= 0.85f) {
             confPill = "High Confidence (" + Math.round(conf * 100) + "%)";
@@ -142,28 +179,41 @@ public class CaptureViewModel extends BaseViewModel {
             confPill = "Incomplete (" + Math.round(conf * 100) + "%)";
         }
 
-        String deadlineText = extraction.getDeadlineRaw() != null && !extraction.getDeadlineRaw().isBlank()
-                ? extraction.getDeadlineRaw()
-                : (extraction.getDeadlineAt() != null ? extraction.getDeadlineAt() : "No deadline detected");
-
-        String evidence = extraction.getEvidenceSnippets() != null && !extraction.getEvidenceSnippets().isEmpty()
-                ? extraction.getEvidenceSnippets().get(0)
-                : null;
-
         uiStateLiveData.setValue(
                 CaptureUiState.extractionSuccess(
                         title,
-                        extraction.getOrganization(),
-                        extraction.getCategory(),
-                        extraction.getSummary(),
+                        org,
+                        category,
+                        summary,
                         deadlineText,
-                        extraction.isDeadlineAmbiguous(),
+                        deadlineAmbiguous,
                         confPill,
                         conf,
                         evidence,
-                        jobId
+                        jobId,
+                        candidates,
+                        selected
                 )
         );
+    }
+
+    public void selectCandidate(com.mnesa.android.data.remote.dto.AiCandidateDto candidate) {
+        CaptureUiState state = uiStateLiveData.getValue();
+        if (state == null || candidate == null) return;
+        uiStateLiveData.setValue(CaptureUiState.extractionSuccess(
+                candidate.getTitle(),
+                candidate.getOrganization(),
+                candidate.getCategory(),
+                candidate.getSummary(),
+                candidate.getDeadlineAt(),
+                false,
+                "Confidence: " + Math.round((candidate.getConfidenceScore() != null ? candidate.getConfidenceScore() : 0.85f) * 100) + "%",
+                candidate.getConfidenceScore() != null ? candidate.getConfidenceScore() : 0.85f,
+                null,
+                currentJobId,
+                state.getCandidates(),
+                candidate
+        ));
     }
 
     public void confirmOpportunity(String titleOverride, String categoryOverride, String deadlineOverride) {
@@ -174,12 +224,14 @@ public class CaptureViewModel extends BaseViewModel {
         CaptureUiState state = uiStateLiveData.getValue();
         String title = titleOverride != null ? titleOverride : (state != null ? state.getTitle() : "Saved Opportunity");
         String category = categoryOverride != null ? categoryOverride : (state != null ? state.getCategory() : "OTHER");
+        String candidateId = state != null && state.getSelectedCandidate() != null ? state.getSelectedCandidate().getId() : null;
 
         ConfirmOpportunityRequestDto request = new ConfirmOpportunityRequestDto(
                 title,
                 state != null ? state.getOrganization() : null,
                 category,
                 null,
+                candidateId,
                 null
         );
 

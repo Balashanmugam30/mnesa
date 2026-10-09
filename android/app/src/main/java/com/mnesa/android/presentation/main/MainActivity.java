@@ -140,7 +140,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
+        int id = item.getItemId();
+        if (id == R.id.action_assistant) {
+            com.mnesa.android.presentation.assistant.AssistantActivity.start(this);
+            return true;
+        } else if (id == R.id.action_insights) {
+            com.mnesa.android.presentation.insights.InsightsActivity.start(this);
+            return true;
+        } else if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }

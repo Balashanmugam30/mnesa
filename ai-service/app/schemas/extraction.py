@@ -129,3 +129,47 @@ class ExtractionResult(BaseModel):
     sanitization_flags: List[str] = Field(default_factory=list)
     validation_status: ValidationStatus = Field(default=ValidationStatus.SUCCEEDED)
     error_message: Optional[str] = None
+
+
+class ImageExtractionPayload(BaseModel):
+    image_base64: str = Field(..., description="Base64-encoded image data")
+    image_mime_type: Optional[str] = Field(None, description="Image MIME type (e.g., image/png, image/jpeg, image/webp)")
+    user_notes: Optional[str] = Field(None, max_length=1000, description="Optional caption or note from user")
+    source_url: Optional[str] = Field(None, description="Optional source or origin URL")
+
+
+class MultiCandidateExtractionResult(BaseModel):
+    success: bool
+    ocr_text: Optional[str] = None
+    candidates: List[ExtractedOpportunity] = Field(default_factory=list)
+    primary_opportunity: Optional[ExtractedOpportunity] = None
+    provider_used: str
+    latency_ms: float
+    sanitization_flags: List[str] = Field(default_factory=list)
+    validation_status: ValidationStatus = Field(default=ValidationStatus.SUCCEEDED)
+    error_message: Optional[str] = None
+
+
+class AssistantRecord(BaseModel):
+    id: str
+    title: str
+    organization: Optional[str] = None
+    category: Optional[str] = None
+    deadline_at: Optional[str] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
+
+
+class AssistantQueryPayload(BaseModel):
+    query: str = Field(..., min_length=1, max_length=1000)
+    context_records: List[AssistantRecord] = Field(default_factory=list)
+    user_timezone: Optional[str] = "UTC"
+
+
+class AssistantQueryResponse(BaseModel):
+    answer: str
+    intent: str
+    cited_opportunity_ids: List[str] = Field(default_factory=list)
+    action_suggestions: List[str] = Field(default_factory=list)
+    latency_ms: float
+

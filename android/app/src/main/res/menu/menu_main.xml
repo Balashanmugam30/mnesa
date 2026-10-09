@@ -2,8 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_assistant"
+        android:title="AI Assistant"
+        android:icon="@drawable/ic_assistant_bot"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_insights"
+        android:title="Insights"
+        android:icon="@drawable/ic_insights_chart"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:title="@string/title_settings"
         android:icon="@drawable/ic_status_check"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>

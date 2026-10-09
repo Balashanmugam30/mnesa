@@ -152,6 +152,37 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
+                    <!-- Multi-Candidate Picker (When screenshot yields multiple proposals) -->
+                    <LinearLayout
+                        android:id="@+id/layoutCandidatesPicker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Detected Opportunities (Select one):"
+                            android:textColor="@color/mnesa_text_muted"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none">
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chipGroupCandidates"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:singleLine="true"
+                                app:singleSelection="true" />
+                        </HorizontalScrollView>
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/txtExtractedDeadline"
                         android:layout_width="match_parent"

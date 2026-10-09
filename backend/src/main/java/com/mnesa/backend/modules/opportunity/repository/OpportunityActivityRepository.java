@@ -14,4 +14,7 @@ public interface OpportunityActivityRepository extends JpaRepository<Opportunity
     List<OpportunityActivity> findAllByOpportunityIdAndUserIdOrderByCreatedAtDesc(UUID opportunityId, UUID userId);
 
     List<OpportunityActivity> findAllByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
+
+    List<OpportunityActivity> findAllByUserIdAndCreatedAtGreaterThanEqualOrderByCreatedAtAsc(UUID userId, java.time.Instant since);
 }
+

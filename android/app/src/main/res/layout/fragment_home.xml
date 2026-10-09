@@ -154,6 +154,38 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Intelligence & Insights Quick Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAskAssistant"
+                style="@style/Widget.Mnesa.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/mnesa_space_2"
+                android:layout_weight="1"
+                android:text="Ask Assistant"
+                app:icon="@drawable/ic_assistant_bot"
+                app:iconTint="@color/mnesa_primary"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewInsights"
+                style="@style/Widget.Mnesa.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/mnesa_space_2"
+                android:layout_weight="1"
+                android:text="View Insights"
+                app:icon="@drawable/ic_insights_chart"
+                app:iconTint="@color/mnesa_primary"
+                android:textSize="13sp" />
+        </LinearLayout>
+
         <!-- Empty State (When no opportunities exist) -->
         <LinearLayout
             android:id="@+id/layoutEmptyHome"

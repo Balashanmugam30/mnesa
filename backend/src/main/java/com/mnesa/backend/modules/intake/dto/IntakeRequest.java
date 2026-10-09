@@ -41,4 +41,8 @@ public class IntakeRequest {
 
     @Schema(description = "Optional client device/source metadata in JSON string format")
     private String metadata;
+
+    @Schema(description = "Optional base64-encoded image payload for OCR extraction")
+    private String imageBase64;
 }
+

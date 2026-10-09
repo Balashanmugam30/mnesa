@@ -28,6 +28,9 @@ public class IntakeJobStatusDto {
     @SerializedName("extraction")
     private AiExtractionDto extraction;
 
+    @SerializedName("candidates")
+    private java.util.List<AiCandidateDto> candidates = new java.util.ArrayList<>();
+
     public IntakeJobStatusDto() {}
 
     public String getJobId() { return jobId; }
@@ -53,4 +56,7 @@ public class IntakeJobStatusDto {
 
     public AiExtractionDto getExtraction() { return extraction; }
     public void setExtraction(AiExtractionDto extraction) { this.extraction = extraction; }
+
+    public java.util.List<AiCandidateDto> getCandidates() { return candidates; }
+    public void setCandidates(java.util.List<AiCandidateDto> candidates) { this.candidates = candidates; }
 }

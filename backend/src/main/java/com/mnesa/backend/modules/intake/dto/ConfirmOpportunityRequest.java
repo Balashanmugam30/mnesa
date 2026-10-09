@@ -19,5 +19,9 @@ public class ConfirmOpportunityRequest {
     @JsonProperty("deadline_at")
     private Instant deadlineAt;
 
+    @JsonProperty("candidate_id")
+    private java.util.UUID candidateId;
+
     private String notes;
 }
+

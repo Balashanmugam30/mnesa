@@ -31,6 +31,8 @@ public class CaptureUiState {
     private final String jobId;
     private final boolean extractionReady;
     private final boolean canConfirm;
+    private final java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> candidates;
+    private final com.mnesa.android.data.remote.dto.AiCandidateDto selectedCandidate;
 
     public CaptureUiState(CaptureState state,
                           String title,
@@ -54,6 +56,36 @@ public class CaptureUiState {
                           String jobId,
                           boolean extractionReady,
                           boolean canConfirm) {
+        this(state, title, subtitle, sourceBadge, statusMessage, progressVisible, success, duplicate, offline,
+                error, canRetry, organization, category, summary, deadlineFormatted, deadlineAmbiguous,
+                confidencePill, confidenceScore, evidenceSnippet, jobId, extractionReady, canConfirm,
+                java.util.Collections.emptyList(), null);
+    }
+
+    public CaptureUiState(CaptureState state,
+                          String title,
+                          String subtitle,
+                          String sourceBadge,
+                          String statusMessage,
+                          boolean progressVisible,
+                          boolean success,
+                          boolean duplicate,
+                          boolean offline,
+                          boolean error,
+                          boolean canRetry,
+                          String organization,
+                          String category,
+                          String summary,
+                          String deadlineFormatted,
+                          boolean deadlineAmbiguous,
+                          String confidencePill,
+                          float confidenceScore,
+                          String evidenceSnippet,
+                          String jobId,
+                          boolean extractionReady,
+                          boolean canConfirm,
+                          java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> candidates,
+                          com.mnesa.android.data.remote.dto.AiCandidateDto selectedCandidate) {
         this.state = state;
         this.title = title;
         this.subtitle = subtitle;
@@ -76,6 +108,8 @@ public class CaptureUiState {
         this.jobId = jobId;
         this.extractionReady = extractionReady;
         this.canConfirm = canConfirm;
+        this.candidates = candidates != null ? candidates : java.util.Collections.emptyList();
+        this.selectedCandidate = selectedCandidate;
     }
 
     public static CaptureUiState validating() {
@@ -124,6 +158,23 @@ public class CaptureUiState {
                                                    float confidenceScore,
                                                    String evidenceSnippet,
                                                    String jobId) {
+        return extractionSuccess(title, organization, category, summary, deadlineFormatted,
+                deadlineAmbiguous, confidencePill, confidenceScore, evidenceSnippet, jobId,
+                java.util.Collections.emptyList(), null);
+    }
+
+    public static CaptureUiState extractionSuccess(String title,
+                                                   String organization,
+                                                   String category,
+                                                   String summary,
+                                                   String deadlineFormatted,
+                                                   boolean deadlineAmbiguous,
+                                                   String confidencePill,
+                                                   float confidenceScore,
+                                                   String evidenceSnippet,
+                                                   String jobId,
+                                                   java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> candidates,
+                                                   com.mnesa.android.data.remote.dto.AiCandidateDto selectedCandidate) {
         return new CaptureUiState(
                 CaptureState.EXTRACTION_SUCCESS,
                 title,
@@ -132,7 +183,8 @@ public class CaptureUiState {
                 "Opportunity details extracted and verified.",
                 false, true, false, false, false, false,
                 organization, category, summary, deadlineFormatted, deadlineAmbiguous,
-                confidencePill, confidenceScore, evidenceSnippet, jobId, true, true
+                confidencePill, confidenceScore, evidenceSnippet, jobId, true, true,
+                candidates, selectedCandidate
         );
     }
 
@@ -230,4 +282,6 @@ public class CaptureUiState {
     public String getJobId() { return jobId; }
     public boolean isExtractionReady() { return extractionReady; }
     public boolean canConfirm() { return canConfirm; }
+    public java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> getCandidates() { return candidates; }
+    public com.mnesa.android.data.remote.dto.AiCandidateDto getSelectedCandidate() { return selectedCandidate; }
 }

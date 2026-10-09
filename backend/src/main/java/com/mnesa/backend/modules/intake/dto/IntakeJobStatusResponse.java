@@ -34,4 +34,8 @@ public class IntakeJobStatusResponse {
     private Instant updatedAt;
 
     private AiExtractionDto extraction;
+
+    @Builder.Default
+    private java.util.List<AiCandidateDto> candidates = new java.util.ArrayList<>();
 }
+

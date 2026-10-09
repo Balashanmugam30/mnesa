@@ -52,8 +52,12 @@ public class Capture {
     @Column(name = "media_size_bytes")
     private Long mediaSizeBytes;
 
+    @Column(name = "media_storage_path", length = 1024)
+    private String mediaStoragePath;
+
     @Column(name = "metadata", columnDefinition = "TEXT")
     private String metadata;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)

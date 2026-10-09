@@ -150,3 +150,33 @@ class MockAIProvider(BaseAIProvider):
             sanitization_flags=flags,
             validation_status=validated_opp.validation_status,
         )
+
+    async def extract_candidates(self, payload: ExtractionPayload):
+        text = payload.raw_text
+        # Check if text contains multiple distinct items (e.g. 1. Title A ... 2. Title B ...)
+        items = []
+        if "\n---\n" in text or "\n===\n" in text:
+            delim = "\n---\n" if "\n---\n" in text else "\n===\n"
+            items = [item.strip() for item in text.split(delim) if item.strip()]
+        elif re.search(r"(?:^|\n)\s*[1-9]\.\s+", text):
+            # Split by numbered items
+            raw_parts = re.split(r"(?:^|\n)\s*[1-9]\.\s+", text)
+            items = [p.strip() for p in raw_parts if len(p.strip()) > 10]
+
+        if len(items) > 1:
+            candidates = []
+            for item in items[:5]:  # limit to top 5 candidates
+                sub_payload = ExtractionPayload(
+                    raw_text=item,
+                    source_url=payload.source_url,
+                    user_notes=payload.user_notes,
+                )
+                res = await self.extract_opportunity(sub_payload)
+                if res.opportunity:
+                    candidates.append(res.opportunity)
+            if candidates:
+                return candidates
+
+        single = await self.extract_opportunity(payload)
+        return [single.opportunity] if single.opportunity else []
+

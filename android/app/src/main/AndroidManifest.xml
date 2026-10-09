@@ -94,6 +94,17 @@
             android:name=".presentation.notifications.NotificationsActivity"
             android:exported="false" />
 
+        <!-- Personal AI Assistant Activity -->
+        <activity
+            android:name=".presentation.assistant.AssistantActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Insights & Analytics Activity -->
+        <activity
+            android:name=".presentation.insights.InsightsActivity"
+            android:exported="false" />
+
         <!-- Firebase Cloud Messaging Service -->
         <service
             android:name=".core.notification.MnesaFirebaseMessagingService"

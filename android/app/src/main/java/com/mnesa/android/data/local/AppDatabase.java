@@ -7,11 +7,13 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+import com.mnesa.android.data.local.dao.CandidateDao;
 import com.mnesa.android.data.local.dao.CaptureDao;
 import com.mnesa.android.data.local.dao.NotificationDao;
 import com.mnesa.android.data.local.dao.OpportunityDao;
 import com.mnesa.android.data.local.dao.ReminderDao;
 import com.mnesa.android.data.local.dao.SyncQueueDao;
+import com.mnesa.android.data.local.entity.CandidateEntity;
 import com.mnesa.android.data.local.entity.CaptureEntity;
 import com.mnesa.android.data.local.entity.NotificationEntity;
 import com.mnesa.android.data.local.entity.OpportunityEntity;
@@ -20,11 +22,11 @@ import com.mnesa.android.data.local.entity.SyncQueueEntity;
 
 /**
  * Main Room Database for MNESA offline cache and Single Source of Truth.
- * Version 4 introduces rich reminder intelligence fields and notifications history.
+ * Version 5 introduces multi-candidate extraction proposals for screenshots.
  */
 @Database(
-        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class, CaptureEntity.class, NotificationEntity.class},
-        version = 4,
+        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class, CaptureEntity.class, NotificationEntity.class, CandidateEntity.class},
+        version = 5,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -37,6 +39,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract SyncQueueDao syncQueueDao();
     public abstract CaptureDao captureDao();
     public abstract NotificationDao notificationDao();
+    public abstract CandidateDao candidateDao();
+
 
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -128,6 +132,24 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS ai_candidates ("
+                    + "id TEXT PRIMARY KEY NOT NULL, "
+                    + "job_id TEXT NOT NULL, "
+                    + "candidate_index INTEGER NOT NULL, "
+                    + "title TEXT NOT NULL, "
+                    + "organization TEXT, "
+                    + "category TEXT NOT NULL, "
+                    + "summary TEXT, "
+                    + "deadline_at INTEGER, "
+                    + "confidence_score REAL NOT NULL, "
+                    + "is_confirmed INTEGER NOT NULL DEFAULT 0)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS idx_candidates_job_id ON ai_candidates(job_id)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -137,7 +159,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             DATABASE_NAME
                     )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build();
                 }
             }
@@ -145,3 +167,4 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
 }
+

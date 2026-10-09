@@ -41,4 +41,31 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, UUID>,
             @Param("start") Instant start,
             @Param("end") Instant end,
             Pageable pageable);
+
+    long countByUserIdAndStatusIn(UUID userId, Collection<OpportunityStatus> statuses);
+
+    long countByUserIdAndStatusNotInAndDeadlineAtIsNotNullAndDeadlineAtGreaterThanEqual(
+            UUID userId, Collection<OpportunityStatus> excludedStatuses, Instant now);
+
+    @Query("SELECT o.opportunityType, COUNT(o) FROM Opportunity o WHERE o.userId = :userId AND o.status != :excludedStatus GROUP BY o.opportunityType")
+    List<Object[]> countGroupedByCategory(@Param("userId") UUID userId, @Param("excludedStatus") OpportunityStatus excludedStatus);
+
+    @Query("SELECT o.status, COUNT(o) FROM Opportunity o WHERE o.userId = :userId GROUP BY o.status")
+    List<Object[]> countGroupedByStatus(@Param("userId") UUID userId);
+
+    @Query("SELECT o.priority, COUNT(o) FROM Opportunity o WHERE o.userId = :userId AND o.status != :excludedStatus GROUP BY o.priority")
+    List<Object[]> countGroupedByPriority(@Param("userId") UUID userId, @Param("excludedStatus") OpportunityStatus excludedStatus);
+
+    @Query("SELECT o FROM Opportunity o WHERE o.userId = :userId AND o.status != :excludedStatus AND (LOWER(o.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(o.organization) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<Opportunity> searchByKeyword(
+            @Param("userId") UUID userId,
+            @Param("excludedStatus") OpportunityStatus excludedStatus,
+            @Param("keyword") String keyword,
+            Pageable pageable);
+
+    List<Opportunity> findByUserIdAndStatusNotAndPriorityInOrderByDeadlineAtAsc(
+            UUID userId, OpportunityStatus excludedStatus, Collection<String> priorities, Pageable pageable);
+
+    List<Opportunity> findTop20ByUserIdAndStatusNotOrderByCreatedAtDesc(UUID userId, OpportunityStatus excludedStatus);
+
 }

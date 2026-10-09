@@ -62,4 +62,66 @@ public class AiServiceClient {
                     .build();
         }
     }
+
+    /**
+     * Dispatches OCR and opportunity extraction for screenshots / images.
+     */
+    public com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto extractImage(com.mnesa.backend.modules.ai.dto.ImageExtractionRequestDto request) {
+        try {
+            log.info("Calling internal AI service to extract screenshot/image opportunities");
+            com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto response = restClient.post()
+                    .uri("/api/v1/extract/image")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(request)
+                    .retrieve()
+                    .body(com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto.class);
+
+            if (response == null) {
+                return com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto.builder()
+                        .success(false)
+                        .validationStatus("FAILED")
+                        .errorMessage("Empty response received from AI image extraction service")
+                        .build();
+            }
+
+            return response;
+        } catch (Exception e) {
+            log.warn("AI service image extraction failed or timed out: {}", e.getMessage());
+            return com.mnesa.backend.modules.ai.dto.MultiCandidateExtractionResultDto.builder()
+                    .success(false)
+                    .validationStatus("PROVIDER_UNAVAILABLE")
+                    .errorMessage("AI image extraction service communication failed: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    /**
+     * Queries Personal AI Assistant with bounded context records.
+     */
+    public com.mnesa.backend.modules.ai.dto.AssistantQueryResponseDto generateAssistantResponse(com.mnesa.backend.modules.ai.dto.AssistantQueryRequestDto request) {
+        try {
+            log.info("Calling internal AI service assistant for query: [{}]", request.getQuery());
+            com.mnesa.backend.modules.ai.dto.AssistantQueryResponseDto response = restClient.post()
+                    .uri("/api/v1/assistant/generate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(request)
+                    .retrieve()
+                    .body(com.mnesa.backend.modules.ai.dto.AssistantQueryResponseDto.class);
+
+            if (response == null) {
+                return com.mnesa.backend.modules.ai.dto.AssistantQueryResponseDto.builder()
+                        .answer("I am unable to generate a response at this moment.")
+                        .intent("GENERAL_QUERY")
+                        .build();
+            }
+
+            return response;
+        } catch (Exception e) {
+            log.warn("AI service assistant query failed or timed out: {}", e.getMessage());
+            return null; // Signals caller to use deterministic local synthesis fallback
+        }
+    }
 }
+

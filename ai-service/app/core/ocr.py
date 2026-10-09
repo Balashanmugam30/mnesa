@@ -49,7 +49,8 @@ class OcrProcessor:
     Provides graceful fallback if local OCR engines are not available in environment.
     """
 
-    def __init__(self):
+    def __init__(self, fallback_extractor=None):
+        self._fallback_extractor = fallback_extractor
         self._tesseract_available = False
         try:
             import pytesseract  # type: ignore
@@ -60,7 +61,7 @@ class OcrProcessor:
 
     @property
     def is_available(self) -> bool:
-        return self._tesseract_available
+        return self._tesseract_available or self._fallback_extractor is not None
 
     def extract_text_from_base64(self, b64_data: str, declared_mime: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
         """
@@ -83,6 +84,11 @@ class OcrProcessor:
             return None, str(e)
 
         if not self._tesseract_available:
+            if self._fallback_extractor:
+                try:
+                    return self._fallback_extractor(raw_bytes), None
+                except Exception as ex:
+                    return None, f"Fallback extractor failed: {str(ex)}"
             logger.info("OCR engine (pytesseract) not installed in runtime environment. Returning graceful fallback.")
             return None, "OCR engine not available in environment (screenshot preserved)"
 

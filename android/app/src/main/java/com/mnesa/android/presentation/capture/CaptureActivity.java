@@ -58,6 +58,25 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
                     binding.badgeConfidence.setTextColor(ContextCompat.getColor(this, R.color.mnesa_error));
                 }
 
+                // Multi-Candidate proposals
+                java.util.List<com.mnesa.android.data.remote.dto.AiCandidateDto> candidates = state.getCandidates();
+                if (candidates != null && candidates.size() > 1) {
+                    binding.layoutCandidatesPicker.setVisibility(View.VISIBLE);
+                    binding.chipGroupCandidates.removeAllViews();
+                    for (int i = 0; i < candidates.size(); i++) {
+                        com.mnesa.android.data.remote.dto.AiCandidateDto cand = candidates.get(i);
+                        com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(this);
+                        chip.setText((i + 1) + ". " + cand.getTitle());
+                        chip.setCheckable(true);
+                        boolean isSelected = state.getSelectedCandidate() != null && cand.getId() != null && cand.getId().equals(state.getSelectedCandidate().getId());
+                        chip.setChecked(isSelected || (state.getSelectedCandidate() == null && i == 0));
+                        chip.setOnClickListener(v -> viewModel.selectCandidate(cand));
+                        binding.chipGroupCandidates.addView(chip);
+                    }
+                } else {
+                    binding.layoutCandidatesPicker.setVisibility(View.GONE);
+                }
+
                 if (state.getDeadlineFormatted() != null) {
                     binding.txtExtractedDeadline.setVisibility(View.VISIBLE);
                     binding.txtExtractedDeadline.setText(getString(R.string.capture_deadline_label, state.getDeadlineFormatted()));

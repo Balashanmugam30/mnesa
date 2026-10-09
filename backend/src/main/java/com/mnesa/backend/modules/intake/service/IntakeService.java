@@ -30,6 +30,8 @@ public class IntakeService {
     private final com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository;
     private final com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository activityRepository;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final com.mnesa.backend.modules.ai.repository.AiCandidateRepository aiCandidateRepository;
+    private final com.mnesa.backend.modules.attachment.repository.AttachmentRepository attachmentRepository;
 
     public IntakeService(CaptureRepository captureRepository,
                          IntakeJobRepository intakeJobRepository,
@@ -38,6 +40,21 @@ public class IntakeService {
                          com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository,
                          com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository activityRepository,
                          com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+        this(captureRepository, intakeJobRepository, urlSanitizerService, aiExtractionRepository,
+                opportunityRepository, activityRepository, objectMapper, null, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public IntakeService(CaptureRepository captureRepository,
+                         IntakeJobRepository intakeJobRepository,
+
+                         UrlSanitizerService urlSanitizerService,
+                         com.mnesa.backend.modules.ai.repository.AiExtractionRepository aiExtractionRepository,
+                         com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository,
+                         com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository activityRepository,
+                         com.fasterxml.jackson.databind.ObjectMapper objectMapper,
+                         com.mnesa.backend.modules.ai.repository.AiCandidateRepository aiCandidateRepository,
+                         com.mnesa.backend.modules.attachment.repository.AttachmentRepository attachmentRepository) {
         this.captureRepository = captureRepository;
         this.intakeJobRepository = intakeJobRepository;
         this.urlSanitizerService = urlSanitizerService;
@@ -45,7 +62,10 @@ public class IntakeService {
         this.opportunityRepository = opportunityRepository;
         this.activityRepository = activityRepository;
         this.objectMapper = objectMapper;
+        this.aiCandidateRepository = aiCandidateRepository;
+        this.attachmentRepository = attachmentRepository;
     }
+
 
     /**
      * Ingests a new share capture with strict idempotency and SSRF validation.
@@ -115,6 +135,10 @@ public class IntakeService {
         }
 
         // 5. Persist Capture
+        String captureMetadata = (request.getImageBase64() != null && !request.getImageBase64().isBlank())
+                ? request.getImageBase64()
+                : request.getMetadata();
+
         Capture capture = Capture.builder()
                 .userId(userId)
                 .sourceType(sourceType)
@@ -126,10 +150,21 @@ public class IntakeService {
                 .idempotencyKey(request.getIdempotencyKey())
                 .mediaMimeType(request.getMediaMimeType())
                 .mediaSizeBytes(request.getMediaSizeBytes())
-                .metadata(request.getMetadata())
+                .metadata(captureMetadata)
                 .status(CaptureStatus.RECEIVED)
                 .build();
         Capture savedCapture = captureRepository.save(capture);
+
+        if (attachmentRepository != null && request.getImageBase64() != null && !request.getImageBase64().isBlank()) {
+            attachmentRepository.save(com.mnesa.backend.modules.attachment.domain.Attachment.builder()
+                    .userId(userId)
+                    .captureId(savedCapture.getId())
+                    .fileName("screenshot_" + System.currentTimeMillis() + ".png")
+                    .storagePath("inline_base64")
+                    .mimeType(request.getMediaMimeType() != null ? request.getMediaMimeType() : "image/png")
+                    .fileSizeBytes(request.getMediaSizeBytes() != null ? request.getMediaSizeBytes() : (long) request.getImageBase64().length())
+                    .build());
+        }
 
         // 6. Persist Asynchronous Intake Job
         IntakeJob job = IntakeJob.builder()
@@ -174,6 +209,8 @@ public class IntakeService {
         IntakeJob job = getIntakeJob(userId, jobId);
 
         com.mnesa.backend.modules.intake.dto.AiExtractionDto extractionDto = null;
+        java.util.List<com.mnesa.backend.modules.intake.dto.AiCandidateDto> candidateDtos = new java.util.ArrayList<>();
+
         if (job.getStatus() == IntakeJobStatus.COMPLETED) {
             java.util.Optional<com.mnesa.backend.modules.ai.domain.AiExtraction> extractionOpt = aiExtractionRepository.findByIntakeJobId(jobId);
             if (extractionOpt.isPresent()) {
@@ -213,6 +250,24 @@ public class IntakeService {
                         .warningMessages(warningList)
                         .processingDurationMs(ex.getProcessingDurationMs())
                         .build();
+
+                if (aiCandidateRepository != null) {
+                    java.util.List<com.mnesa.backend.modules.ai.domain.AiCandidate> candidates =
+                            aiCandidateRepository.findAllByExtractionIdOrderByCandidateIndexAsc(ex.getId());
+                    for (com.mnesa.backend.modules.ai.domain.AiCandidate c : candidates) {
+                        candidateDtos.add(com.mnesa.backend.modules.intake.dto.AiCandidateDto.builder()
+                                .id(c.getId())
+                                .candidateIndex(c.getCandidateIndex())
+                                .title(c.getTitle())
+                                .organization(c.getOrganization())
+                                .category(c.getCategory())
+                                .summary(c.getSummary())
+                                .deadlineAt(c.getDeadlineAt())
+                                .confidenceScore(c.getConfidenceScore())
+                                .isConfirmed(c.isConfirmed())
+                                .build());
+                    }
+                }
             }
         }
 
@@ -225,6 +280,7 @@ public class IntakeService {
                 .createdAt(job.getCreatedAt())
                 .updatedAt(job.getUpdatedAt())
                 .extraction(extractionDto)
+                .candidates(candidateDtos)
                 .build();
     }
 
@@ -250,15 +306,37 @@ public class IntakeService {
             category = request.getCategory().trim().toUpperCase();
         }
 
+        java.time.Instant deadlineAt = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getDeadlineAt).orElse(null);
+        if (request != null && request.getDeadlineAt() != null) {
+            deadlineAt = request.getDeadlineAt();
+        }
+
+        if (request != null && request.getCandidateId() != null && aiCandidateRepository != null) {
+            java.util.Optional<com.mnesa.backend.modules.ai.domain.AiCandidate> candOpt = aiCandidateRepository.findById(request.getCandidateId());
+            if (candOpt.isPresent()) {
+                com.mnesa.backend.modules.ai.domain.AiCandidate cand = candOpt.get();
+                if (request.getTitle() == null || request.getTitle().isBlank()) {
+                    title = cand.getTitle();
+                }
+                if (request.getOrganization() == null || request.getOrganization().isBlank()) {
+                    organization = cand.getOrganization();
+                }
+                if (request.getCategory() == null || request.getCategory().isBlank()) {
+                    category = cand.getCategory();
+                }
+                if (request.getDeadlineAt() == null) {
+                    deadlineAt = cand.getDeadlineAt();
+                }
+                cand.setConfirmed(true);
+                aiCandidateRepository.save(cand);
+            }
+        }
+
         com.mnesa.backend.modules.opportunity.domain.OpportunityType oppType = com.mnesa.backend.modules.opportunity.domain.OpportunityType.OTHER;
         try {
             oppType = com.mnesa.backend.modules.opportunity.domain.OpportunityType.valueOf(category);
         } catch (IllegalArgumentException ignored) {}
 
-        java.time.Instant deadlineAt = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getDeadlineAt).orElse(null);
-        if (request != null && request.getDeadlineAt() != null) {
-            deadlineAt = request.getDeadlineAt();
-        }
 
         java.math.BigDecimal confidence = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getOverallConfidence).orElse(java.math.BigDecimal.valueOf(0.8));
         String description = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getSummary).orElse(null);

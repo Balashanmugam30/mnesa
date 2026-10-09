@@ -19,3 +19,12 @@ class BaseAIProvider(ABC):
         Extracts structured opportunity details from the untrusted payload.
         """
         pass
+
+    async def extract_candidates(self, payload: ExtractionPayload):
+        """
+        Extracts multiple opportunity proposals from dense multi-item text or screenshots.
+        Defaults to returning a list with the single primary extracted opportunity.
+        """
+        result = await self.extract_opportunity(payload)
+        return [result.opportunity] if result.opportunity else []
+

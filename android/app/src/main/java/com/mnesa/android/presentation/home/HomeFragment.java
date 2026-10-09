@@ -81,6 +81,10 @@ public class HomeFragment extends Fragment {
         binding.recyclerRecentlySaved.setAdapter(adapterRecentlySaved);
 
         // Buttons
+        binding.btnAskAssistant.setOnClickListener(v ->
+                com.mnesa.android.presentation.assistant.AssistantActivity.start(requireContext()));
+        binding.btnViewInsights.setOnClickListener(v ->
+                com.mnesa.android.presentation.insights.InsightsActivity.start(requireContext()));
         binding.btnSeedSampleHome.setOnClickListener(v -> viewModel.seedSampleData());
         binding.btnQuickLoadSample.setOnClickListener(v -> viewModel.seedSampleData());
         binding.btnClearData.setOnClickListener(v -> viewModel.clearData());
