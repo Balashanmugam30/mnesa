@@ -17,4 +17,5 @@ public class UserPreferencesDto {
     private ReminderTimingPreference reminderTiming;
     private boolean emailNotificationsEnabled;
     private boolean pushNotificationsEnabled;
+    private String timezone;
 }

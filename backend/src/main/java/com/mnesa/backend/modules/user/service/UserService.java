@@ -94,6 +94,9 @@ public class UserService {
         if (request.getPushNotificationsEnabled() != null) {
             preferences.setPushNotificationsEnabled(request.getPushNotificationsEnabled());
         }
+        if (request.getTimezone() != null && !request.getTimezone().isBlank()) {
+            preferences.setTimezone(request.getTimezone());
+        }
 
         preferences = userPreferencesRepository.save(preferences);
         return toPreferencesDto(preferences);
@@ -150,6 +153,7 @@ public class UserService {
                 .reminderTiming(preferences.getReminderTiming())
                 .emailNotificationsEnabled(preferences.isEmailNotificationsEnabled())
                 .pushNotificationsEnabled(preferences.isPushNotificationsEnabled())
+                .timezone(preferences.getTimezone())
                 .build();
     }
 }

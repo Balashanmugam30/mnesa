@@ -22,6 +22,7 @@ public class SecureTokenManager {
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_PUSH_TOKEN = "fcm_push_token";
 
     private final SharedPreferences sharedPreferences;
 
@@ -83,6 +84,14 @@ public class SecureTokenManager {
     public synchronized boolean isLoggedIn() {
         String token = getAccessToken();
         return token != null && !token.trim().isEmpty();
+    }
+
+    public synchronized void savePushToken(String pushToken) {
+        sharedPreferences.edit().putString(KEY_PUSH_TOKEN, pushToken).apply();
+    }
+
+    public synchronized String getPushToken() {
+        return sharedPreferences.getString(KEY_PUSH_TOKEN, null);
     }
 
     public synchronized void clearSession() {

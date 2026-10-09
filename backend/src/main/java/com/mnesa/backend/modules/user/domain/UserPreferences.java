@@ -45,6 +45,10 @@ public class UserPreferences {
     @Builder.Default
     private boolean pushNotificationsEnabled = true;
 
+    @Column(name = "timezone", nullable = false)
+    @Builder.Default
+    private String timezone = "UTC";
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

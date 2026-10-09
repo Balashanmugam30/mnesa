@@ -23,6 +23,10 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.mnesa.backend.modules.reminder.domain.Reminder;
+import com.mnesa.backend.modules.reminder.domain.ReminderStatus;
+import com.mnesa.backend.modules.reminder.repository.ReminderRepository;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class OpportunityService {
     private final OpportunityActivityRepository activityRepository;
     private final TagRepository tagRepository;
     private final OpportunityTransitionService transitionService;
+    private final ReminderRepository reminderRepository;
 
     @Transactional
     public OpportunityResponse createOpportunity(UUID userId, CreateOpportunityRequest request) {
@@ -195,6 +200,14 @@ public class OpportunityService {
 
         Opportunity updated = opportunityRepository.save(opportunity);
 
+        if (targetStatus == OpportunityStatus.APPLIED ||
+            targetStatus == OpportunityStatus.ARCHIVED ||
+            targetStatus == OpportunityStatus.SELECTED ||
+            targetStatus == OpportunityStatus.REJECTED ||
+            targetStatus == OpportunityStatus.MISSED) {
+            cancelPendingReminders(updated.getId());
+        }
+
         String description = request.getNote() != null && !request.getNote().isBlank()
                 ? request.getNote().trim()
                 : "Lifecycle status transitioned from " + currentStatus + " to " + targetStatus;
@@ -224,11 +237,28 @@ public class OpportunityService {
         opportunity.setLastStatusChangeAt(Instant.now());
 
         Opportunity saved = opportunityRepository.save(opportunity);
+        cancelPendingReminders(saved.getId());
+
         recordActivity(saved.getId(), userId, "ARCHIVED", currentStatus.name(), OpportunityStatus.ARCHIVED.name(),
                 "Opportunity moved to archive", null);
 
         log.info("Opportunity archived: id={} userId={}", id, userId);
         return toResponse(saved);
+    }
+
+    private void cancelPendingReminders(UUID opportunityId) {
+        try {
+            List<Reminder> reminders = reminderRepository.findByOpportunityId(opportunityId);
+            for (Reminder r : reminders) {
+                if (r.getStatus() == ReminderStatus.SCHEDULED || r.getStatus() == ReminderStatus.SNOOZED) {
+                    r.cancel();
+                    reminderRepository.save(r);
+                    log.info("Auto-cancelled pending reminder {} for opportunity {}", r.getId(), opportunityId);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to auto-cancel reminders for opportunity {}: {}", opportunityId, e.getMessage());
+        }
     }
 
     @Transactional

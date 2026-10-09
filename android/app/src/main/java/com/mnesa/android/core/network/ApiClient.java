@@ -23,6 +23,7 @@ public class ApiClient {
     private final UserApiService userApiService;
     private final com.mnesa.android.data.remote.api.IntakeApiService intakeApiService;
     private final com.mnesa.android.data.remote.api.OpportunityApiService opportunityApiService;
+    private final com.mnesa.android.data.remote.api.ReminderApiService reminderApiService;
     private final SecureTokenManager tokenManager;
 
     private ApiClient(Context context) {
@@ -53,6 +54,7 @@ public class ApiClient {
         this.userApiService = retrofit.create(UserApiService.class);
         this.intakeApiService = retrofit.create(com.mnesa.android.data.remote.api.IntakeApiService.class);
         this.opportunityApiService = retrofit.create(com.mnesa.android.data.remote.api.OpportunityApiService.class);
+        this.reminderApiService = retrofit.create(com.mnesa.android.data.remote.api.ReminderApiService.class);
 
         authenticator.setAuthApiService(authApiService);
     }
@@ -82,6 +84,10 @@ public class ApiClient {
 
     public com.mnesa.android.data.remote.api.OpportunityApiService getOpportunityApiService() {
         return opportunityApiService;
+    }
+
+    public com.mnesa.android.data.remote.api.ReminderApiService getReminderApiService() {
+        return reminderApiService;
     }
 
     public SecureTokenManager getTokenManager() {

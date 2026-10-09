@@ -13,14 +13,22 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mnesa.android.R;
 import com.mnesa.android.core.base.BaseActivity;
+import com.mnesa.android.core.network.ApiClient;
 import com.mnesa.android.core.security.SecureTokenManager;
 import com.mnesa.android.core.utils.DateTimeUtils;
 import com.mnesa.android.data.local.AppDatabase;
 import com.mnesa.android.data.remote.dto.OpportunityActivityDto;
 import com.mnesa.android.data.repository.OpportunityRepositoryImpl;
+import com.mnesa.android.data.repository.ReminderRepositoryImpl;
 import com.mnesa.android.databinding.ActivityOpportunityDetailBinding;
 import com.mnesa.android.domain.model.Opportunity;
 import com.mnesa.android.domain.model.OpportunityStatus;
+import com.mnesa.android.domain.model.Reminder;
+import com.mnesa.android.domain.repository.ReminderRepository;
+import com.mnesa.android.presentation.reminders.ReminderEditorActivity;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,6 +44,8 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
     public static final String EXTRA_OPPORTUNITY_ID = "extra_opportunity_id";
 
     private OpportunityDetailViewModel viewModel;
+    private ReminderRepository reminderRepository;
+    private final CompositeDisposable disposables = new CompositeDisposable();
     private String opportunityId;
 
     public static void start(Context context, String opportunityId) {
@@ -69,6 +79,7 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
         SecureTokenManager tokenManager = new SecureTokenManager(this);
         String userId = tokenManager.getUserId();
         OpportunityRepositoryImpl oppRepo = new OpportunityRepositoryImpl(this);
+        reminderRepository = new ReminderRepositoryImpl(db.reminderDao(), ApiClient.getInstance(this).getReminderApiService());
 
         viewModel = new OpportunityDetailViewModel(oppRepo, userId);
 
@@ -77,6 +88,16 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
         });
 
         binding.btnChangeStatus.setOnClickListener(v -> showStatusSelectionDialog());
+
+        binding.btnAddReminder.setOnClickListener(v -> {
+            Opportunity opp = viewModel.getOpportunity().getValue();
+            Intent intent = new Intent(this, ReminderEditorActivity.class);
+            intent.putExtra(ReminderEditorActivity.EXTRA_OPPORTUNITY_ID, opportunityId);
+            if (opp != null && opp.getTitle() != null) {
+                intent.putExtra(ReminderEditorActivity.EXTRA_OPPORTUNITY_TITLE, opp.getTitle());
+            }
+            startActivity(intent);
+        });
 
         viewModel.loadOpportunity(opportunityId);
     }
@@ -87,6 +108,7 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
         if (viewModel != null && opportunityId != null) {
             viewModel.loadOpportunity(opportunityId);
         }
+        loadOpportunityReminders();
     }
 
     @Override
@@ -294,4 +316,71 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void loadOpportunityReminders() {
+        if (opportunityId == null || reminderRepository == null) return;
+        disposables.add(
+                reminderRepository.getRemindersForOpportunity(opportunityId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::bindRemindersData, throwable -> {})
+        );
+    }
+
+    private void bindRemindersData(List<Reminder> reminders) {
+        binding.layoutRemindersList.removeAllViews();
+        if (reminders == null || reminders.isEmpty()) {
+            TextView emptyTv = new TextView(this);
+            emptyTv.setText("No proactive reminders scheduled for this opportunity yet.");
+            emptyTv.setTextColor(ContextCompat.getColor(this, R.color.mnesa_text_secondary));
+            emptyTv.setTextSize(13f);
+            emptyTv.setPadding(0, 8, 0, 8);
+            binding.layoutRemindersList.addView(emptyTv);
+            return;
+        }
+
+        for (Reminder r : reminders) {
+            View card = LayoutInflater.from(this).inflate(R.layout.item_reminder_card, binding.layoutRemindersList, false);
+            TextView txtTitle = card.findViewById(R.id.txtReminderTitle);
+            TextView txtCadence = card.findViewById(R.id.txtReminderCadence);
+            TextView txtStatus = card.findViewById(R.id.txtReminderStatus);
+            TextView txtTrigger = card.findViewById(R.id.txtTriggerTime);
+            TextView txtReason = card.findViewById(R.id.txtSmartReason);
+            View actions = card.findViewById(R.id.layoutActions);
+
+            txtTitle.setText(r.getTitle());
+            txtCadence.setText(r.getReminderType());
+            txtStatus.setText(r.getStatus());
+            txtTrigger.setText("Trigger: " + DateTimeUtils.formatRelativeTimestamp(r.getEffectiveTriggerTime()));
+            if (r.getSmartReason() != null && !r.getSmartReason().isBlank()) {
+                txtReason.setVisibility(View.VISIBLE);
+                txtReason.setText(r.getSmartReason());
+            } else {
+                txtReason.setVisibility(View.GONE);
+            }
+            if (actions != null) {
+                actions.setVisibility(View.GONE);
+            }
+
+            card.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ReminderEditorActivity.class);
+                intent.putExtra(ReminderEditorActivity.EXTRA_REMINDER_ID, r.getId());
+                intent.putExtra(ReminderEditorActivity.EXTRA_OPPORTUNITY_ID, opportunityId);
+                Opportunity opp = viewModel.getOpportunity().getValue();
+                if (opp != null && opp.getTitle() != null) {
+                    intent.putExtra(ReminderEditorActivity.EXTRA_OPPORTUNITY_TITLE, opp.getTitle());
+                }
+                startActivity(intent);
+            });
+
+            binding.layoutRemindersList.addView(card);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposables.clear();
+        super.onDestroy();
+    }
 }
+

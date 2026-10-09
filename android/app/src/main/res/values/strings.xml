@@ -117,4 +117,18 @@
     <string name="profile_offline_status">Room SQLite • Single Source of Truth • Fully Cached</string>
     <string name="profile_sync_status">Local-First Sync Engine Active</string>
     <string name="profile_settings_btn">Settings &amp; Preferences</string>
+
+    <!-- Phase 07 Reminders & Notifications -->
+    <string name="filter_upcoming">Upcoming</string>
+    <string name="filter_needs_attention">Needs Attention</string>
+    <string name="filter_snoozed">Snoozed</string>
+    <string name="filter_history">History</string>
+    <string name="btn_add_reminder">Add Reminder</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="empty_notifications_title">No notifications yet</string>
+    <string name="empty_notifications_body">When smart reminders or alerts trigger, you\'ll see them here.</string>
+    <string name="editor_title_new">New Reminder</string>
+    <string name="editor_title_edit">Edit Reminder</string>
+    <string name="smart_suggestions_header">Smart Suggestions</string>
+    <string name="btn_apply_suggestion">Apply</string>
 </resources>

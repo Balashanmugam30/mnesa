@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Mnesa.Card.Opportunity"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/mnesa_space_2"
+    android:clickable="true"
+    android:focusable="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/mnesa_space_4">
+
+        <!-- Unread Indicator Dot -->
+        <View
+            android:id="@+id/viewUnreadDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_unread_dot"
+            app:layout_constraintTop_toTopOf="@id/txtNotificationChannel"
+            app:layout_constraintBottom_toBottomOf="@id/txtNotificationChannel"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Notification Channel Badge -->
+        <TextView
+            android:id="@+id/txtNotificationChannel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/mnesa_space_2"
+            android:background="@drawable/bg_badge_pill"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/viewUnreadDot"
+            tools:text="PUSH" />
+
+        <!-- Sent Time -->
+        <TextView
+            android:id="@+id/txtSentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="11sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="10m ago" />
+
+        <!-- Notification Title -->
+        <TextView
+            android:id="@+id/txtNotificationTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/mnesa_text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/txtNotificationChannel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Deadline in 24 hours: Google Summer of Code" />
+
+        <!-- Notification Body -->
+        <TextView
+            android:id="@+id/txtNotificationBody"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@id/txtNotificationTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Your opportunity submission deadline is approaching tomorrow at 11:59 PM. Review requirements and submit early." />
+
+        <!-- Footer / Target hint -->
+        <TextView
+            android:id="@+id/txtTapHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_2"
+            android:drawableStart="@drawable/ic_open_in_new"
+            android:drawablePadding="4dp"
+            android:text="Tap to view opportunity"
+            android:textColor="@color/mnesa_primary"
+            android:textSize="11sp"
+            app:layout_constraintTop_toBottomOf="@id/txtNotificationBody"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

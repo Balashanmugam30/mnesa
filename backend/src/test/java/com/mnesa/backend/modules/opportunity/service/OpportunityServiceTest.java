@@ -39,6 +39,9 @@ class OpportunityServiceTest {
     @Mock
     private TagRepository tagRepository;
 
+    @Mock
+    private com.mnesa.backend.modules.reminder.repository.ReminderRepository reminderRepository;
+
     private OpportunityTransitionService transitionService;
     private OpportunityService opportunityService;
 
@@ -51,7 +54,8 @@ class OpportunityServiceTest {
                 opportunityRepository,
                 activityRepository,
                 tagRepository,
-                transitionService
+                transitionService,
+                reminderRepository
         );
     }
 

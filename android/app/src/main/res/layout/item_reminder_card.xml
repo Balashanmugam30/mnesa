@@ -34,7 +34,7 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/imgBell"
-            tools:text="3 DAYS BEFORE" />
+            tools:text="PREPARATION" />
 
         <TextView
             android:id="@+id/txtReminderStatus"
@@ -63,19 +63,67 @@
             tools:text="Submit final application draft for DeepMind Internship" />
 
         <TextView
+            android:id="@+id/txtSmartReason"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/txtReminderTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Recommended 7 days early based on scholarship application effort."
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/txtTriggerTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/mnesa_space_1"
+            android:layout_marginTop="@dimen/mnesa_space_2"
             android:drawableStart="@drawable/ic_deadline_clock"
             android:drawablePadding="@dimen/mnesa_space_1"
             android:textColor="@color/mnesa_urgency_warning"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/txtReminderTitle"
+            app:layout_constraintTop_toBottomOf="@id/txtSmartReason"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Trigger: Tomorrow at 9:00 AM" />
+
+        <!-- Actions Row -->
+        <LinearLayout
+            android:id="@+id/layoutActions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_3"
+            android:gravity="end|center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/txtTriggerTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSnooze"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Snooze"
+                android:textColor="@color/mnesa_primary"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDismiss"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dismiss"
+                android:textColor="@color/mnesa_text_secondary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

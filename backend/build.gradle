@@ -44,6 +44,9 @@ dependencies {
     // Actuator & Observability
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // Firebase Admin for FCM Push Delivery
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
+
     // OpenAPI & API Documentation
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 

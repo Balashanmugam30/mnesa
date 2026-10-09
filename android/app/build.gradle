@@ -60,6 +60,9 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.10.0'
     implementation 'androidx.work:work-rxjava3:2.10.0'
 
+    // Firebase Cloud Messaging (FCM Client)
+    implementation 'com.google.firebase:firebase-messaging:24.1.0'
+
     // Reactive Streams (RxJava 3)
     implementation 'io.reactivex.rxjava3:rxjava:3.1.10'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'

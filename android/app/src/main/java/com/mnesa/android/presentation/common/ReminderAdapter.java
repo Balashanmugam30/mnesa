@@ -1,6 +1,7 @@
 package com.mnesa.android.presentation.common;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -13,7 +14,7 @@ import com.mnesa.android.domain.model.Reminder;
 import java.util.Objects;
 
 /**
- * Reusable RecyclerView adapter displaying reminders in the Reminders tab.
+ * Reusable RecyclerView adapter displaying reminders with snooze and dismiss actions.
  */
 public class ReminderAdapter extends ListAdapter<Reminder, ReminderAdapter.ViewHolder> {
 
@@ -21,7 +22,13 @@ public class ReminderAdapter extends ListAdapter<Reminder, ReminderAdapter.ViewH
         void onItemClick(Reminder reminder);
     }
 
-    private final OnItemClickListener listener;
+    public interface OnReminderActionListener {
+        void onReminderClick(Reminder reminder);
+        void onSnoozeClick(Reminder reminder);
+        void onDismissClick(Reminder reminder);
+    }
+
+    private final OnReminderActionListener actionListener;
 
     private static final DiffUtil.ItemCallback<Reminder> DIFF_CALLBACK = new DiffUtil.ItemCallback<Reminder>() {
         @Override
@@ -32,14 +39,28 @@ public class ReminderAdapter extends ListAdapter<Reminder, ReminderAdapter.ViewH
         @Override
         public boolean areContentsTheSame(@NonNull Reminder oldItem, @NonNull Reminder newItem) {
             return Objects.equals(oldItem.getTitle(), newItem.getTitle()) &&
-                    Objects.equals(oldItem.getTriggerTimestamp(), newItem.getTriggerTimestamp()) &&
-                    Objects.equals(oldItem.getStatus(), newItem.getStatus());
+                    oldItem.getEffectiveTriggerTime() == newItem.getEffectiveTriggerTime() &&
+                    Objects.equals(oldItem.getStatus(), newItem.getStatus()) &&
+                    oldItem.getSnoozeCount() == newItem.getSnoozeCount();
         }
     };
 
     public ReminderAdapter(OnItemClickListener listener) {
+        this(new OnReminderActionListener() {
+            @Override
+            public void onReminderClick(Reminder reminder) {
+                if (listener != null) listener.onItemClick(reminder);
+            }
+            @Override
+            public void onSnoozeClick(Reminder reminder) {}
+            @Override
+            public void onDismissClick(Reminder reminder) {}
+        });
+    }
+
+    public ReminderAdapter(OnReminderActionListener actionListener) {
         super(DIFF_CALLBACK);
-        this.listener = listener;
+        this.actionListener = actionListener;
     }
 
     @NonNull
@@ -65,16 +86,43 @@ public class ReminderAdapter extends ListAdapter<Reminder, ReminderAdapter.ViewH
 
         void bind(Reminder item) {
             binding.txtReminderTitle.setText(item.getTitle());
-            binding.txtReminderCadence.setText(item.getReminderType().replace("_", " "));
+            binding.txtReminderCadence.setText(item.getReminderType());
             binding.txtReminderStatus.setText(item.getStatus());
 
-            if (item.getTriggerTimestamp() > 0) {
-                binding.txtTriggerTime.setText("Trigger: " + DateTimeUtils.formatRelativeDeadline(item.getTriggerTimestamp()));
+            long trigger = item.getEffectiveTriggerTime();
+            String timeFormatted = DateTimeUtils.formatRelativeTimestamp(trigger);
+            if (item.getSnoozeUntil() != null && item.getSnoozeUntil() > 0) {
+                binding.txtTriggerTime.setText("Snoozed: " + timeFormatted);
+            } else {
+                binding.txtTriggerTime.setText("Trigger: " + timeFormatted);
             }
 
+            if (item.getSmartReason() != null && !item.getSmartReason().isBlank()) {
+                binding.txtSmartReason.setVisibility(View.VISIBLE);
+                binding.txtSmartReason.setText(item.getSmartReason());
+            } else {
+                binding.txtSmartReason.setVisibility(View.GONE);
+            }
+
+            // Hide action buttons for completed / cancelled / dismissed reminders
+            boolean isActive = "SCHEDULED".equals(item.getStatus()) || "SNOOZED".equals(item.getStatus());
+            binding.layoutActions.setVisibility(isActive ? View.VISIBLE : View.GONE);
+
+            binding.btnSnooze.setOnClickListener(v -> {
+                if (actionListener != null) {
+                    actionListener.onSnoozeClick(item);
+                }
+            });
+
+            binding.btnDismiss.setOnClickListener(v -> {
+                if (actionListener != null) {
+                    actionListener.onDismissClick(item);
+                }
+            });
+
             binding.getRoot().setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onItemClick(item);
+                if (actionListener != null) {
+                    actionListener.onReminderClick(item);
                 }
             });
         }

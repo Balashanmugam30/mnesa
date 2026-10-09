@@ -64,7 +64,14 @@
         <!-- Opportunity Management Activities -->
         <activity
             android:name=".presentation.opportunities.OpportunityDetailActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="mnesa" android:host="opportunity" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".presentation.opportunities.EditOpportunityActivity"
@@ -75,6 +82,26 @@
             android:name=".presentation.opportunities.AddOpportunityActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Reminder Editor Activity -->
+        <activity
+            android:name=".presentation.reminders.ReminderEditorActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Notification History Activity -->
+        <activity
+            android:name=".presentation.notifications.NotificationsActivity"
+            android:exported="false" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".core.notification.MnesaFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Ultra-Fast Share Target Capture Activity -->
         <activity

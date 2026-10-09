@@ -1,102 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mnesa_background"
-    android:orientation="vertical">
+    android:background="@color/mnesa_background">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/mnesa_space_4"
-        android:paddingTop="@dimen/mnesa_space_4"
-        android:paddingBottom="@dimen/mnesa_space_2">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/reminders_title"
-            android:textColor="@color/mnesa_text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="@string/reminders_subtitle"
-            android:textColor="@color/mnesa_text_secondary"
-            android:textSize="13sp" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!-- Skeleton Loading Container -->
+        <!-- Top Header with Notifications Icon -->
         <LinearLayout
-            android:id="@+id/layoutSkeletonReminders"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingHorizontal="@dimen/mnesa_space_4"
-            android:visibility="gone">
+            android:paddingTop="@dimen/mnesa_space_4"
+            android:paddingBottom="@dimen/mnesa_space_2">
 
-            <include layout="@layout/view_skeleton_card" />
-            <include layout="@layout/view_skeleton_card" />
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <!-- Reminders RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerReminders"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/mnesa_space_4"
-            android:paddingTop="@dimen/mnesa_space_2"
-            android:paddingBottom="@dimen/mnesa_space_12"
-            tools:listitem="@layout/item_reminder_card" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reminders_title"
+                    android:textColor="@color/mnesa_text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
-        <!-- Empty State Layout -->
-        <LinearLayout
-            android:id="@+id/layoutEmptyReminders"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="@dimen/mnesa_space_8"
-            android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/reminders_subtitle"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
 
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:contentDescription="@string/empty_reminders_title"
+            <!-- Notifications Activity Button -->
+            <ImageButton
+                android:id="@+id/btnNotifications"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/notifications_title"
                 android:src="@drawable/ic_nav_reminders"
                 app:tint="@color/mnesa_primary" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mnesa_space_4"
-                android:text="@string/empty_reminders_title"
-                android:textColor="@color/mnesa_text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mnesa_space_2"
-                android:gravity="center"
-                android:text="@string/empty_reminders_body"
-                android:textColor="@color/mnesa_text_secondary"
-                android:textSize="14sp" />
         </LinearLayout>
 
-    </FrameLayout>
+        <!-- Filter Chips (Upcoming, Needs Attention, Snoozed, History, All) -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/mnesa_space_4"
+            android:paddingBottom="@dimen/mnesa_space_2"
+            android:scrollbars="none">
 
-</LinearLayout>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipUpcoming"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/filter_upcoming" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipNeedsAttention"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_needs_attention" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSnoozed"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_snoozed" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipHistory"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_history" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_all" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Skeleton Loading Container -->
+            <LinearLayout
+                android:id="@+id/layoutSkeletonReminders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/mnesa_space_4"
+                android:visibility="gone">
+
+                <include layout="@layout/view_skeleton_card" />
+                <include layout="@layout/view_skeleton_card" />
+            </LinearLayout>
+
+            <!-- Reminders RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerReminders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/mnesa_space_4"
+                android:paddingTop="@dimen/mnesa_space_2"
+                android:paddingBottom="88dp"
+                tools:listitem="@layout/item_reminder_card" />
+
+            <!-- Empty State Layout -->
+            <LinearLayout
+                android:id="@+id/layoutEmptyReminders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/mnesa_space_8"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:contentDescription="@string/empty_reminders_title"
+                    android:src="@drawable/ic_nav_reminders"
+                    app:tint="@color/mnesa_primary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mnesa_space_4"
+                    android:text="@string/empty_reminders_title"
+                    android:textColor="@color/mnesa_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mnesa_space_2"
+                    android:gravity="center"
+                    android:text="@string/empty_reminders_body"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- FAB for Adding a Custom or Opportunity Reminder -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddReminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:text="@string/btn_add_reminder"
+        android:textColor="@color/mnesa_white"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/mnesa_white"
+        app:backgroundTint="@color/mnesa_primary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

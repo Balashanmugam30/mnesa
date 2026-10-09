@@ -8,21 +8,23 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.mnesa.android.data.local.dao.CaptureDao;
+import com.mnesa.android.data.local.dao.NotificationDao;
 import com.mnesa.android.data.local.dao.OpportunityDao;
 import com.mnesa.android.data.local.dao.ReminderDao;
 import com.mnesa.android.data.local.dao.SyncQueueDao;
 import com.mnesa.android.data.local.entity.CaptureEntity;
+import com.mnesa.android.data.local.entity.NotificationEntity;
 import com.mnesa.android.data.local.entity.OpportunityEntity;
 import com.mnesa.android.data.local.entity.ReminderEntity;
 import com.mnesa.android.data.local.entity.SyncQueueEntity;
 
 /**
  * Main Room Database for MNESA offline cache and Single Source of Truth.
- * Version 3 introduces captures table and intake pipeline persistence.
+ * Version 4 introduces rich reminder intelligence fields and notifications history.
  */
 @Database(
-        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class, CaptureEntity.class},
-        version = 3,
+        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class, CaptureEntity.class, NotificationEntity.class},
+        version = 4,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -34,11 +36,11 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ReminderDao reminderDao();
     public abstract SyncQueueDao syncQueueDao();
     public abstract CaptureDao captureDao();
+    public abstract NotificationDao notificationDao();
 
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Update opportunities table with new columns for Phase 03
             database.execSQL("ALTER TABLE opportunities ADD COLUMN user_id TEXT NOT NULL DEFAULT ''");
             database.execSQL("ALTER TABLE opportunities ADD COLUMN category TEXT NOT NULL DEFAULT 'OTHER'");
             database.execSQL("ALTER TABLE opportunities ADD COLUMN description TEXT");
@@ -51,7 +53,6 @@ public abstract class AppDatabase extends RoomDatabase {
             database.execSQL("ALTER TABLE opportunities ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE opportunities ADD COLUMN sync_state TEXT NOT NULL DEFAULT 'SYNCED'");
 
-            // Create reminders table
             database.execSQL("CREATE TABLE IF NOT EXISTS reminders ("
                     + "id TEXT PRIMARY KEY NOT NULL, "
                     + "opportunity_id TEXT NOT NULL, "
@@ -62,7 +63,6 @@ public abstract class AppDatabase extends RoomDatabase {
                     + "status TEXT NOT NULL, "
                     + "created_at INTEGER NOT NULL)");
 
-            // Create sync_queue table
             database.execSQL("CREATE TABLE IF NOT EXISTS sync_queue ("
                     + "operation_id TEXT PRIMARY KEY NOT NULL, "
                     + "user_id TEXT NOT NULL, "
@@ -100,6 +100,34 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE reminders ADD COLUMN notes TEXT");
+            database.execSQL("ALTER TABLE reminders ADD COLUMN target_timezone TEXT NOT NULL DEFAULT 'UTC'");
+            database.execSQL("ALTER TABLE reminders ADD COLUMN snooze_until INTEGER");
+            database.execSQL("ALTER TABLE reminders ADD COLUMN snooze_count INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE reminders ADD COLUMN smart_reason TEXT");
+            database.execSQL("ALTER TABLE reminders ADD COLUMN opportunity_title TEXT");
+
+            database.execSQL("CREATE TABLE IF NOT EXISTS notifications ("
+                    + "id TEXT PRIMARY KEY NOT NULL, "
+                    + "user_id TEXT NOT NULL, "
+                    + "reminder_id TEXT, "
+                    + "opportunity_id TEXT, "
+                    + "title TEXT NOT NULL, "
+                    + "body TEXT NOT NULL, "
+                    + "channel TEXT NOT NULL, "
+                    + "provider TEXT NOT NULL, "
+                    + "delivery_status TEXT NOT NULL, "
+                    + "deep_link_uri TEXT, "
+                    + "metadata_json TEXT, "
+                    + "opened_at INTEGER, "
+                    + "created_at INTEGER NOT NULL)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -109,7 +137,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             DATABASE_NAME
                     )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build();
                 }
             }

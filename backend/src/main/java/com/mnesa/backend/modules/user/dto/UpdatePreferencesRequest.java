@@ -17,4 +17,5 @@ public class UpdatePreferencesRequest {
     private ReminderTimingPreference reminderTiming;
     private Boolean emailNotificationsEnabled;
     private Boolean pushNotificationsEnabled;
+    private String timezone;
 }
