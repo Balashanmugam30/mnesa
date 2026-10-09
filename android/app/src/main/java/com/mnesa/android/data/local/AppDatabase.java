@@ -7,20 +7,22 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+import com.mnesa.android.data.local.dao.CaptureDao;
 import com.mnesa.android.data.local.dao.OpportunityDao;
 import com.mnesa.android.data.local.dao.ReminderDao;
 import com.mnesa.android.data.local.dao.SyncQueueDao;
+import com.mnesa.android.data.local.entity.CaptureEntity;
 import com.mnesa.android.data.local.entity.OpportunityEntity;
 import com.mnesa.android.data.local.entity.ReminderEntity;
 import com.mnesa.android.data.local.entity.SyncQueueEntity;
 
 /**
  * Main Room Database for MNESA offline cache and Single Source of Truth.
- * Version 2 introduces strict user scoping, reminders, and durable sync queue.
+ * Version 3 introduces captures table and intake pipeline persistence.
  */
 @Database(
-        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class},
-        version = 2,
+        entities = {OpportunityEntity.class, ReminderEntity.class, SyncQueueEntity.class, CaptureEntity.class},
+        version = 3,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -31,6 +33,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract OpportunityDao opportunityDao();
     public abstract ReminderDao reminderDao();
     public abstract SyncQueueDao syncQueueDao();
+    public abstract CaptureDao captureDao();
 
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -76,6 +79,27 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS captures ("
+                    + "id TEXT PRIMARY KEY NOT NULL, "
+                    + "user_id TEXT NOT NULL, "
+                    + "source_type TEXT NOT NULL, "
+                    + "original_text TEXT, "
+                    + "original_url TEXT, "
+                    + "canonical_url TEXT, "
+                    + "source_domain TEXT, "
+                    + "idempotency_key TEXT NOT NULL, "
+                    + "status TEXT NOT NULL, "
+                    + "backend_job_id TEXT, "
+                    + "created_at INTEGER NOT NULL, "
+                    + "updated_at INTEGER NOT NULL)");
+            database.execSQL("CREATE INDEX IF NOT EXISTS idx_captures_user_id ON captures(user_id)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_captures_user_id_idempotency_key ON captures(user_id, idempotency_key)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -85,7 +109,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             DATABASE_NAME
                     )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build();
                 }
             }

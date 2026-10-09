@@ -17,6 +17,12 @@
     <string name="capture_success">Opportunity captured! We\'ll remember.</string>
     <string name="capture_view_details">View Details</string>
     <string name="capture_done">Done</string>
+    <string name="capture_title_capturing">Capturing Opportunity…</string>
+    <string name="capture_title_captured">Opportunity Captured!</string>
+    <string name="capture_title_queued">Saved Offline</string>
+    <string name="capture_title_duplicate">Previously Captured</string>
+    <string name="capture_action_retry">Retry</string>
+    <string name="capture_action_view">View in App</string>
 
     <!-- Buttons & Actions -->
     <string name="action_save">Save</string>

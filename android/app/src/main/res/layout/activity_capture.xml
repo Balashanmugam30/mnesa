@@ -33,12 +33,23 @@
                 android:layout_marginBottom="@dimen/mnesa_space_4"
                 android:background="@color/mnesa_border_strong" />
 
+            <!-- Header Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- Progress Spinner -->
+                <ProgressBar
+                    android:id="@+id/progressSpinner"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/mnesa_primary"
+                    android:visibility="gone" />
+
+                <!-- Status Icon -->
                 <ImageView
                     android:id="@+id/imgCaptureIcon"
                     android:layout_width="32dp"
@@ -57,18 +68,42 @@
                     android:textColor="@color/mnesa_text_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
+
+                <!-- Source Badge -->
+                <TextView
+                    android:id="@+id/badgeSourceType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/mnesa_space_2"
+                    android:background="@drawable/bg_badge_pill"
+                    android:paddingStart="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/mnesa_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Captured Content Preview -->
-            <TextView
-                android:id="@+id/txtCapturedPreview"
+            <!-- Preview Card -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/mnesa_space_3"
-                android:ellipsize="end"
-                android:maxLines="3"
-                android:textColor="@color/mnesa_text_secondary"
-                android:textSize="14sp" />
+                android:layout_marginTop="@dimen/mnesa_space_4"
+                app:cardBackgroundColor="@color/mnesa_surface_card"
+                app:cardCornerRadius="@dimen/mnesa_radius_md"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/txtCapturedPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:padding="@dimen/mnesa_space_3"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="14sp" />
+            </androidx.cardview.widget.CardView>
 
             <!-- Capture Status Indicator -->
             <TextView
@@ -87,6 +122,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/mnesa_space_6"
                 android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnRetry"
+                    style="@style/Widget.Mnesa.Button.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/mnesa_space_3"
+                    android:layout_weight="1"
+                    android:text="@string/capture_action_retry"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnDone"

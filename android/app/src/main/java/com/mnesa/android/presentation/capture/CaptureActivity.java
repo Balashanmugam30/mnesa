@@ -1,12 +1,12 @@
 package com.mnesa.android.presentation.capture;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import androidx.core.content.ContextCompat;
+import com.mnesa.android.R;
 import com.mnesa.android.core.base.BaseActivity;
-import com.mnesa.android.data.local.AppDatabase;
-import com.mnesa.android.data.repository.OpportunityRepositoryImpl;
+import com.mnesa.android.data.repository.IntakeRepositoryImpl;
 import com.mnesa.android.databinding.ActivityCaptureBinding;
 
 /**
@@ -23,11 +23,11 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
 
     @Override
     protected void initViews() {
-        AppDatabase database = AppDatabase.getInstance(this);
-        OpportunityRepositoryImpl repository = new OpportunityRepositoryImpl(database.opportunityDao());
+        IntakeRepositoryImpl repository = new IntakeRepositoryImpl(this);
         viewModel = new CaptureViewModel(repository);
 
         binding.btnDone.setOnClickListener(v -> finish());
+        binding.btnRetry.setOnClickListener(v -> viewModel.retry());
         binding.captureRoot.setOnClickListener(v -> finish());
 
         handleIncomingIntent(getIntent());
@@ -35,16 +35,49 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
 
     @Override
     protected void observeViewModel() {
-        viewModel.getPreviewText().observe(this, text -> {
-            binding.txtCapturedPreview.setText(text);
-        });
+        viewModel.getUiState().observe(this, state -> {
+            if (state == null) return;
 
-        viewModel.getCaptureCompleted().observe(this, completed -> {
-            if (completed != null && completed) {
-                // Instantly confirm capture to the user
-                binding.txtCaptureStatus.setText(com.mnesa.android.R.string.capture_success);
+            binding.txtCaptureTitle.setText(state.getSubtitle());
+            binding.txtCapturedPreview.setText(state.getTitle());
+            binding.badgeSourceType.setText(state.getSourceBadge());
+            binding.txtCaptureStatus.setText(state.getStatusMessage());
+
+            if (state.isProgressVisible()) {
+                binding.progressSpinner.setVisibility(View.VISIBLE);
+                binding.imgCaptureIcon.setVisibility(View.GONE);
+            } else {
+                binding.progressSpinner.setVisibility(View.GONE);
+                binding.imgCaptureIcon.setVisibility(View.VISIBLE);
+
+                if (state.isOffline()) {
+                    binding.imgCaptureIcon.setImageResource(R.drawable.ic_wifi_off);
+                    binding.imgCaptureIcon.setColorFilter(ContextCompat.getColor(this, R.color.mnesa_urgency_warning));
+                    binding.txtCaptureStatus.setTextColor(ContextCompat.getColor(this, R.color.mnesa_urgency_warning));
+                } else if (state.isDuplicate()) {
+                    binding.imgCaptureIcon.setImageResource(R.drawable.ic_status_alert);
+                    binding.imgCaptureIcon.setColorFilter(ContextCompat.getColor(this, R.color.mnesa_urgency_warning));
+                    binding.txtCaptureStatus.setTextColor(ContextCompat.getColor(this, R.color.mnesa_urgency_warning));
+                } else if (state.isError()) {
+                    binding.imgCaptureIcon.setImageResource(R.drawable.ic_status_alert);
+                    binding.imgCaptureIcon.setColorFilter(ContextCompat.getColor(this, R.color.mnesa_error));
+                    binding.txtCaptureStatus.setTextColor(ContextCompat.getColor(this, R.color.mnesa_error));
+                } else {
+                    binding.imgCaptureIcon.setImageResource(R.drawable.ic_status_check);
+                    binding.imgCaptureIcon.setColorFilter(ContextCompat.getColor(this, R.color.mnesa_status_success));
+                    binding.txtCaptureStatus.setTextColor(ContextCompat.getColor(this, R.color.mnesa_status_success));
+                }
             }
+
+            binding.btnRetry.setVisibility(state.canRetry() ? View.VISIBLE : View.GONE);
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIncomingIntent(intent);
     }
 
     private void handleIncomingIntent(Intent intent) {
@@ -52,23 +85,6 @@ public class CaptureActivity extends BaseActivity<ActivityCaptureBinding> {
             finish();
             return;
         }
-
-        String action = intent.getAction();
-        String type = intent.getType();
-
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if ("text/plain".equals(type) || type.startsWith("text/")) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                viewModel.processSharedContent(sharedText, sharedText);
-            } else if (type.startsWith("image/")) {
-                Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                String uriString = imageUri != null ? imageUri.toString() : "Shared Image";
-                viewModel.processSharedContent(uriString, null);
-            }
-        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            viewModel.processSharedContent("Multiple items shared", null);
-        } else {
-            finish();
-        }
+        viewModel.processIncomingIntent(intent, getContentResolver());
     }
 }
