@@ -12,6 +12,7 @@ import com.mnesa.backend.modules.user.dto.UpdatePreferencesRequest;
 import com.mnesa.backend.modules.user.dto.UpdateProfileRequest;
 import com.mnesa.backend.modules.user.dto.UserPreferencesDto;
 import com.mnesa.backend.modules.user.dto.UserProfileResponse;
+import com.mnesa.backend.modules.attachment.repository.AttachmentRepository;
 import com.mnesa.backend.modules.user.repository.UserPreferencesRepository;
 import com.mnesa.backend.modules.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -31,19 +32,22 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final DeviceInstallationRepository deviceInstallationRepository;
+    private final AttachmentRepository attachmentRepository;
 
     public UserService(UserRepository userRepository,
                        UserPreferencesRepository userPreferencesRepository,
                        AuthIdentityRepository authIdentityRepository,
                        RefreshTokenRepository refreshTokenRepository,
                        PasswordResetTokenRepository passwordResetTokenRepository,
-                       DeviceInstallationRepository deviceInstallationRepository) {
+                       DeviceInstallationRepository deviceInstallationRepository,
+                       AttachmentRepository attachmentRepository) {
         this.userRepository = userRepository;
         this.userPreferencesRepository = userPreferencesRepository;
         this.authIdentityRepository = authIdentityRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.deviceInstallationRepository = deviceInstallationRepository;
+        this.attachmentRepository = attachmentRepository;
     }
 
     @Transactional(readOnly = true)
@@ -114,6 +118,7 @@ public class UserService {
         passwordResetTokenRepository.deleteByUserId(userId);
         authIdentityRepository.deleteByUserId(userId);
         userPreferencesRepository.deleteByUserId(userId);
+        attachmentRepository.deleteByUserId(userId);
 
         // Delete user
         userRepository.delete(user);

@@ -41,6 +41,7 @@ yarn-error.log*
 playwright-report/
 blob-report/
 playwright/.cache/
+*.tsbuildinfo
 
 # Python & AI service
 __pycache__/

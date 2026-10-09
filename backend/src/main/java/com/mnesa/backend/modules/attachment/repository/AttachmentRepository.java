@@ -16,4 +16,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
     List<Attachment> findAllByOpportunityIdAndUserId(UUID opportunityId, UUID userId);
 
     Optional<Attachment> findByCaptureIdAndUserId(UUID captureId, UUID userId);
+
+    void deleteByUserId(UUID userId);
 }

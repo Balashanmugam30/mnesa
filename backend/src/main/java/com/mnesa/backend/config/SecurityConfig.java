@@ -85,7 +85,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:3000"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://localhost:3100",
+                "http://127.0.0.1:3100",
+                "https://mnesa.ai"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("X-Correlation-ID"));
