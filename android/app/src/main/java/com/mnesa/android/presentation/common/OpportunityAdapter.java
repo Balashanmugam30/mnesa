@@ -1,7 +1,6 @@
 package com.mnesa.android.presentation.common;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +37,7 @@ public class OpportunityAdapter extends ListAdapter<Opportunity, OpportunityAdap
         public boolean areContentsTheSame(@NonNull Opportunity oldItem, @NonNull Opportunity newItem) {
             return Objects.equals(oldItem.getTitle(), newItem.getTitle()) &&
                     Objects.equals(oldItem.getStatus(), newItem.getStatus()) &&
+                    Objects.equals(oldItem.getCategory(), newItem.getCategory()) &&
                     Objects.equals(oldItem.getDeadlineTimestamp(), newItem.getDeadlineTimestamp());
         }
     };
@@ -74,6 +74,34 @@ public class OpportunityAdapter extends ListAdapter<Opportunity, OpportunityAdap
             binding.txtOpportunityTitle.setText(item.getTitle());
             binding.txtOrganization.setText(item.getOrganization());
             binding.chipOpportunityType.setText(item.getCategory() != null ? item.getCategory().toUpperCase() : "OPPORTUNITY");
+
+            if (item.getStatus() != null) {
+                binding.chipOpportunityStatus.setVisibility(View.VISIBLE);
+                binding.chipOpportunityStatus.setText(item.getStatus().name());
+                switch (item.getStatus()) {
+                    case SELECTED:
+                    case COMPLETED:
+                        binding.chipOpportunityStatus.setTextColor(ContextCompat.getColor(context, R.color.mnesa_status_success));
+                        break;
+                    case REJECTED:
+                    case MISSED:
+                        binding.chipOpportunityStatus.setTextColor(ContextCompat.getColor(context, R.color.mnesa_urgency_critical));
+                        break;
+                    case APPLYING:
+                    case REVIEWING:
+                        binding.chipOpportunityStatus.setTextColor(ContextCompat.getColor(context, R.color.mnesa_primary));
+                        break;
+                    case APPLIED:
+                    case WAITING:
+                        binding.chipOpportunityStatus.setTextColor(ContextCompat.getColor(context, R.color.mnesa_urgency_warning));
+                        break;
+                    default:
+                        binding.chipOpportunityStatus.setTextColor(ContextCompat.getColor(context, R.color.mnesa_text_secondary));
+                        break;
+                }
+            } else {
+                binding.chipOpportunityStatus.setVisibility(View.GONE);
+            }
 
             if (item.hasDeadline()) {
                 binding.txtDeadline.setVisibility(View.VISIBLE);

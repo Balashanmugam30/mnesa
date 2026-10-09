@@ -5,7 +5,12 @@ public enum OpportunityStatus {
     PROCESSING,
     UNDERSTOOD,
     SAVED,
-    ACTED,
-    COMPLETED,
+    REVIEWING,
+    APPLYING,
+    APPLIED,
+    WAITING,
+    SELECTED,
+    REJECTED,
+    MISSED,
     ARCHIVED
 }

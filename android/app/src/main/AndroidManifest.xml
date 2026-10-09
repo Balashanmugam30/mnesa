@@ -61,6 +61,21 @@
             android:name=".presentation.main.MainActivity"
             android:exported="false" />
 
+        <!-- Opportunity Management Activities -->
+        <activity
+            android:name=".presentation.opportunities.OpportunityDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.opportunities.EditOpportunityActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".presentation.opportunities.AddOpportunityActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Ultra-Fast Share Target Capture Activity -->
         <activity
             android:name=".presentation.capture.CaptureActivity"

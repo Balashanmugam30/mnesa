@@ -27,6 +27,20 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:text="HACKATHON" />
 
+        <!-- Opportunity Status Chip -->
+        <TextView
+            android:id="@+id/chipOpportunityStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/mnesa_space_2"
+            android:background="@drawable/bg_badge_pill"
+            android:textColor="@color/mnesa_text_secondary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/chipOpportunityType"
+            tools:text="SAVED" />
+
         <!-- Deadline Urgency Indicator -->
         <TextView
             android:id="@+id/txtDeadline"

@@ -28,6 +28,7 @@ public class IntakeService {
     private final UrlSanitizerService urlSanitizerService;
     private final com.mnesa.backend.modules.ai.repository.AiExtractionRepository aiExtractionRepository;
     private final com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository;
+    private final com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository activityRepository;
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public IntakeService(CaptureRepository captureRepository,
@@ -35,12 +36,14 @@ public class IntakeService {
                          UrlSanitizerService urlSanitizerService,
                          com.mnesa.backend.modules.ai.repository.AiExtractionRepository aiExtractionRepository,
                          com.mnesa.backend.modules.opportunity.repository.OpportunityRepository opportunityRepository,
+                         com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository activityRepository,
                          com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.captureRepository = captureRepository;
         this.intakeJobRepository = intakeJobRepository;
         this.urlSanitizerService = urlSanitizerService;
         this.aiExtractionRepository = aiExtractionRepository;
         this.opportunityRepository = opportunityRepository;
+        this.activityRepository = activityRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -258,20 +261,52 @@ public class IntakeService {
         }
 
         java.math.BigDecimal confidence = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getOverallConfidence).orElse(java.math.BigDecimal.valueOf(0.8));
+        String description = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getSummary).orElse(null);
+        String registrationUrl = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getRegistrationUrl).orElse(null);
+        String location = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getLocation).orElse(null);
+        String eligibility = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getEligibility).orElse(null);
+        String workMode = extractionOpt.map(ex -> ex.getWorkMode() != null ? ex.getWorkMode().name() : "UNSPECIFIED").orElse("UNSPECIFIED");
+        String estimatedEffort = extractionOpt.map(ex -> ex.getEstimatedEffortMinutes() != null ? ex.getEstimatedEffortMinutes() + " mins" : null).orElse(null);
+        String priority = extractionOpt.map(ex -> ex.getPriority() != null ? ex.getPriority().name() : "NORMAL").orElse("NORMAL");
+        String priorityReason = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getPriorityReason).orElse(null);
+        UUID extractionId = extractionOpt.map(com.mnesa.backend.modules.ai.domain.AiExtraction::getId).orElse(null);
 
         com.mnesa.backend.modules.opportunity.domain.Opportunity opportunity = com.mnesa.backend.modules.opportunity.domain.Opportunity.builder()
                 .userId(userId)
                 .title(title)
                 .organization(organization)
                 .opportunityType(oppType)
+                .description(description)
                 .sourceUrl(capture.getCanonicalUrl() != null ? capture.getCanonicalUrl() : capture.getOriginalUrl())
+                .registrationUrl(registrationUrl)
+                .sourceDomain(capture.getSourceDomain())
                 .rawContent(capture.getOriginalText())
                 .status(com.mnesa.backend.modules.opportunity.domain.OpportunityStatus.SAVED)
                 .deadlineAt(deadlineAt)
+                .location(location)
+                .workMode(workMode)
+                .eligibility(eligibility)
+                .estimatedEffort(estimatedEffort)
+                .priority(priority)
+                .priorityReason(priorityReason)
                 .confidenceScore(confidence)
+                .extractionId(extractionId)
+                .lastStatusChangeAt(java.time.Instant.now())
                 .build();
 
-        return opportunityRepository.save(opportunity);
+        com.mnesa.backend.modules.opportunity.domain.Opportunity saved = opportunityRepository.save(opportunity);
+
+        if (activityRepository != null) {
+            activityRepository.save(com.mnesa.backend.modules.opportunity.domain.OpportunityActivity.builder()
+                    .opportunityId(saved.getId())
+                    .userId(userId)
+                    .actionType("CONFIRMED")
+                    .newStatus(com.mnesa.backend.modules.opportunity.domain.OpportunityStatus.SAVED.name())
+                    .description("Confirmed from AI extraction proposal")
+                    .build());
+        }
+
+        return saved;
     }
 
     private SourceType classifySource(IntakeRequest request, String canonicalUrl, boolean hasMedia, boolean hasText) {

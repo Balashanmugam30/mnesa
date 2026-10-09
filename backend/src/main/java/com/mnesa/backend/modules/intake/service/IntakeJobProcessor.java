@@ -211,11 +211,22 @@ public class IntakeJobProcessor {
                 .title(title)
                 .organization(organization)
                 .opportunityType(oppType)
+                .description(opp.getSummary())
                 .sourceUrl(capture.getCanonicalUrl() != null ? capture.getCanonicalUrl() : capture.getOriginalUrl())
+                .registrationUrl(opp.getRegistrationUrl() != null ? opp.getRegistrationUrl() : capture.getCanonicalUrl())
+                .sourceDomain(capture.getSourceDomain())
                 .rawContent(capture.getOriginalText())
                 .status(OpportunityStatus.UNDERSTOOD)
                 .deadlineAt(deadlineAt)
+                .deadlineTimezone(deadlineTz)
+                .location(location)
+                .workMode(workMode != null ? workMode.name() : "UNSPECIFIED")
+                .eligibility(eligibility)
+                .estimatedEffort(opp.getEstimatedEffortMinutes() != null ? opp.getEstimatedEffortMinutes() + " mins" : null)
+                .priority(priority != null ? priority.name() : "NORMAL")
+                .priorityReason(opp.getPriorityReason())
                 .confidenceScore(BigDecimal.valueOf(opp.getOverallConfidence() != null ? opp.getOverallConfidence() : 0.8))
+                .extractionId(extraction.getId())
                 .build();
         opportunityRepository.save(opportunity);
 

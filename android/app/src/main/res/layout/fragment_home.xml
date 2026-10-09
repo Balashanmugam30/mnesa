@@ -198,6 +198,62 @@
                 android:text="@string/btn_load_sample_data" />
         </LinearLayout>
 
+        <!-- Suggested Action Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSuggestedAction"
+            style="@style/Widget.Mnesa.Card.Opportunity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/mnesa_space_4"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/mnesa_space_4">
+
+                <TextView
+                    android:id="@+id/badgeSuggested"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_pill"
+                    android:text="SUGGESTED ACTION"
+                    android:textColor="@color/mnesa_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtSuggestedTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mnesa_space_2"
+                    android:textColor="@color/mnesa_text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Complete Google Summer Fellowship Application" />
+
+                <TextView
+                    android:id="@+id/txtSuggestedReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/mnesa_text_secondary"
+                    android:textSize="13sp"
+                    tools:text="Urgent deadline closing in 2 days" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSuggestedAction"
+                    style="@style/Widget.Mnesa.Button.Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/mnesa_space_3"
+                    android:text="Take Action"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Needs Attention Section -->
         <LinearLayout
             android:id="@+id/sectionNeedsAttention"

@@ -13,24 +13,36 @@ import io.reactivex.rxjava3.core.Single;
 import java.util.List;
 
 /**
- * Room Data Access Object for Opportunities with strict user isolation.
+ * Room Data Access Object for Opportunities with strict user isolation and lifecycle querying.
  */
 @Dao
 public interface OpportunityDao {
 
-    @Query("SELECT * FROM opportunities WHERE user_id = :userId ORDER BY created_at DESC")
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' ORDER BY created_at DESC")
     Flowable<List<OpportunityEntity>> getAllOpportunities(String userId);
 
-    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND category = :category ORDER BY created_at DESC")
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' AND category = :category ORDER BY created_at DESC")
     Flowable<List<OpportunityEntity>> getOpportunitiesByCategory(String userId, String category);
 
-    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND deadline_timestamp IS NOT NULL AND deadline_timestamp > :now AND deadline_timestamp <= :threshold ORDER BY deadline_timestamp ASC")
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status = :status ORDER BY created_at DESC")
+    Flowable<List<OpportunityEntity>> getOpportunitiesByStatus(String userId, String status);
+
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' AND (title LIKE '%' || :query || '%' OR organization LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%') ORDER BY created_at DESC")
+    Flowable<List<OpportunityEntity>> searchOpportunities(String userId, String query);
+
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND (:includeArchived = 1 OR status != 'ARCHIVED') AND (:query IS NULL OR :query = '' OR title LIKE '%' || :query || '%' OR organization LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%') AND (:category IS NULL OR :category = '' OR category = :category) AND (:status IS NULL OR :status = '' OR status = :status) ORDER BY created_at DESC")
+    Flowable<List<OpportunityEntity>> filterOpportunities(String userId, String query, String category, String status, int includeArchived);
+
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status = 'ARCHIVED' ORDER BY updated_at DESC")
+    Flowable<List<OpportunityEntity>> getArchivedOpportunities(String userId);
+
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' AND deadline_timestamp IS NOT NULL AND deadline_timestamp > :now AND deadline_timestamp <= :threshold ORDER BY deadline_timestamp ASC")
     Flowable<List<OpportunityEntity>> getNeedsAttention(String userId, long now, long threshold);
 
-    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND (deadline_timestamp IS NULL OR deadline_timestamp > :now) ORDER BY COALESCE(deadline_timestamp, 9223372036854775807) ASC")
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' AND (deadline_timestamp IS NULL OR deadline_timestamp > :now) ORDER BY COALESCE(deadline_timestamp, 9223372036854775807) ASC")
     Flowable<List<OpportunityEntity>> getUpcoming(String userId, long now);
 
-    @Query("SELECT * FROM opportunities WHERE user_id = :userId ORDER BY created_at DESC LIMIT :limit")
+    @Query("SELECT * FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' ORDER BY created_at DESC LIMIT :limit")
     Flowable<List<OpportunityEntity>> getRecentlySaved(String userId, int limit);
 
     @Query("SELECT * FROM opportunities WHERE id = :id AND user_id = :userId LIMIT 1")
@@ -45,15 +57,21 @@ public interface OpportunityDao {
     @Update
     Completable updateOpportunity(OpportunityEntity entity);
 
+    @Query("UPDATE opportunities SET status = :newStatus, updated_at = :updatedAt WHERE id = :id AND user_id = :userId")
+    Completable updateStatus(String id, String userId, String newStatus, long updatedAt);
+
     @Query("DELETE FROM opportunities WHERE id = :id AND user_id = :userId")
     Completable deleteOpportunityById(String id, String userId);
 
     @Query("DELETE FROM opportunities WHERE user_id = :userId")
     Completable deleteAllForUser(String userId);
 
-    @Query("SELECT COUNT(*) FROM opportunities WHERE user_id = :userId")
+    @Query("SELECT COUNT(*) FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED'")
     Single<Integer> countForUser(String userId);
 
-    @Query("SELECT COUNT(*) FROM opportunities WHERE user_id = :userId AND deadline_timestamp IS NOT NULL AND deadline_timestamp > :now AND deadline_timestamp <= :threshold")
+    @Query("SELECT COUNT(*) FROM opportunities WHERE user_id = :userId AND status = :status")
+    Single<Integer> countByStatus(String userId, String status);
+
+    @Query("SELECT COUNT(*) FROM opportunities WHERE user_id = :userId AND status != 'ARCHIVED' AND deadline_timestamp IS NOT NULL AND deadline_timestamp > :now AND deadline_timestamp <= :threshold")
     Single<Integer> countUrgentForUser(String userId, long now, long threshold);
 }

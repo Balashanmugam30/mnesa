@@ -1,6 +1,8 @@
 package com.mnesa.android.presentation.opportunities;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.mnesa.android.R;
 import com.mnesa.android.core.security.SecureTokenManager;
 import com.mnesa.android.data.local.AppDatabase;
 import com.mnesa.android.data.repository.OpportunityRepositoryImpl;
@@ -16,7 +17,8 @@ import com.mnesa.android.databinding.FragmentOpportunitiesBinding;
 import com.mnesa.android.presentation.common.OpportunityAdapter;
 
 /**
- * All Opportunities tab supporting category filtering, offline viewing, skeleton loading, and empty states.
+ * All Opportunities tab supporting search, category & status filtering,
+ * offline viewing, skeleton loading, and adding opportunities.
  */
 public class OpportunitiesFragment extends Fragment {
 
@@ -39,20 +41,62 @@ public class OpportunitiesFragment extends Fragment {
         SecureTokenManager tokenManager = new SecureTokenManager(requireContext());
         String userId = tokenManager.getUserId();
 
-        OpportunityRepositoryImpl oppRepo = new OpportunityRepositoryImpl(db.opportunityDao());
+        OpportunityRepositoryImpl oppRepo = new OpportunityRepositoryImpl(requireContext());
         viewModel = new OpportunitiesViewModel(oppRepo, userId);
 
-        adapter = new OpportunityAdapter(opp -> {});
+        adapter = new OpportunityAdapter(opp -> {
+            OpportunityDetailActivity.start(requireContext(), opp.getId());
+        });
         binding.recyclerAllOpportunities.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerAllOpportunities.setAdapter(adapter);
 
+        setupSearchInput();
+        setupStatusChips();
         setupFilterChips();
 
+        binding.fabAddOpportunity.setOnClickListener(v -> {
+            AddOpportunityActivity.start(requireContext());
+        });
+
         binding.btnSeedOpportunities.setOnClickListener(v -> viewModel.seedSampleData());
-        binding.btnRetryOpportunities.setOnClickListener(v ->
-                viewModel.loadOpportunities(viewModel.getActiveFilter().getValue()));
+        binding.btnRetryOpportunities.setOnClickListener(v -> viewModel.applyFilters());
 
         observeViewModel();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel != null) {
+            viewModel.applyFilters();
+        }
+    }
+
+    private void setupSearchInput() {
+        binding.inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (viewModel != null) {
+                    viewModel.setSearchQuery(s != null ? s.toString() : "");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void setupStatusChips() {
+        binding.chipStatusAll.setOnClickListener(v -> viewModel.setStatusFilter("ALL"));
+        binding.chipStatusSaved.setOnClickListener(v -> viewModel.setStatusFilter("SAVED"));
+        binding.chipStatusReviewing.setOnClickListener(v -> viewModel.setStatusFilter("REVIEWING"));
+        binding.chipStatusApplying.setOnClickListener(v -> viewModel.setStatusFilter("APPLYING"));
+        binding.chipStatusApplied.setOnClickListener(v -> viewModel.setStatusFilter("APPLIED"));
+        binding.chipStatusWaiting.setOnClickListener(v -> viewModel.setStatusFilter("WAITING"));
+        binding.chipStatusArchived.setOnClickListener(v -> viewModel.setStatusFilter("ARCHIVED"));
     }
 
     private void setupFilterChips() {
