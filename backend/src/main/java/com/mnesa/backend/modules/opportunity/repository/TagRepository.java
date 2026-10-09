@@ -2,6 +2,9 @@ package com.mnesa.backend.modules.opportunity.repository;
 
 import com.mnesa.backend.modules.opportunity.domain.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +19,8 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
     Optional<Tag> findByUserIdAndName(UUID userId, String name);
 
     Optional<Tag> findByIdAndUserId(UUID id, UUID userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM Tag t WHERE t.userId = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 }

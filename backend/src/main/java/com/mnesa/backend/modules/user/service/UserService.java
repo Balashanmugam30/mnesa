@@ -13,6 +13,10 @@ import com.mnesa.backend.modules.user.dto.UpdateProfileRequest;
 import com.mnesa.backend.modules.user.dto.UserPreferencesDto;
 import com.mnesa.backend.modules.user.dto.UserProfileResponse;
 import com.mnesa.backend.modules.attachment.repository.AttachmentRepository;
+import com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository;
+import com.mnesa.backend.modules.opportunity.repository.OpportunityRepository;
+import com.mnesa.backend.modules.opportunity.repository.TagRepository;
+import com.mnesa.backend.modules.reminder.repository.ReminderRepository;
 import com.mnesa.backend.modules.user.repository.UserPreferencesRepository;
 import com.mnesa.backend.modules.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +37,10 @@ public class UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final DeviceInstallationRepository deviceInstallationRepository;
     private final AttachmentRepository attachmentRepository;
+    private final ReminderRepository reminderRepository;
+    private final OpportunityRepository opportunityRepository;
+    private final OpportunityActivityRepository opportunityActivityRepository;
+    private final TagRepository tagRepository;
 
     public UserService(UserRepository userRepository,
                        UserPreferencesRepository userPreferencesRepository,
@@ -40,7 +48,11 @@ public class UserService {
                        RefreshTokenRepository refreshTokenRepository,
                        PasswordResetTokenRepository passwordResetTokenRepository,
                        DeviceInstallationRepository deviceInstallationRepository,
-                       AttachmentRepository attachmentRepository) {
+                       AttachmentRepository attachmentRepository,
+                       ReminderRepository reminderRepository,
+                       OpportunityRepository opportunityRepository,
+                       OpportunityActivityRepository opportunityActivityRepository,
+                       TagRepository tagRepository) {
         this.userRepository = userRepository;
         this.userPreferencesRepository = userPreferencesRepository;
         this.authIdentityRepository = authIdentityRepository;
@@ -48,6 +60,10 @@ public class UserService {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.deviceInstallationRepository = deviceInstallationRepository;
         this.attachmentRepository = attachmentRepository;
+        this.reminderRepository = reminderRepository;
+        this.opportunityRepository = opportunityRepository;
+        this.opportunityActivityRepository = opportunityActivityRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Transactional(readOnly = true)
@@ -112,13 +128,23 @@ public class UserService {
 
         log.info("Executing GDPR-compliant cascading account deletion for user ID: {}", userId);
 
-        // Delete associated records
+        // Delete reminders and notifications
+        reminderRepository.deleteByUserId(userId);
+
+        // Delete opportunities, activities, and tags
+        opportunityActivityRepository.deleteByUserId(userId);
+        opportunityRepository.deleteByUserId(userId);
+        tagRepository.deleteByUserId(userId);
+
+        // Delete attachments metadata
+        attachmentRepository.deleteByUserId(userId);
+
+        // Delete associated auth and device records
         deviceInstallationRepository.deleteByUserId(userId);
         refreshTokenRepository.deleteByUserId(userId);
         passwordResetTokenRepository.deleteByUserId(userId);
         authIdentityRepository.deleteByUserId(userId);
         userPreferencesRepository.deleteByUserId(userId);
-        attachmentRepository.deleteByUserId(userId);
 
         // Delete user
         userRepository.delete(user);

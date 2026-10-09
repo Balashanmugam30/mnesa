@@ -2,6 +2,10 @@ package com.mnesa.backend.modules.user.service;
 
 import com.mnesa.backend.common.exception.ResourceNotFoundException;
 import com.mnesa.backend.modules.attachment.repository.AttachmentRepository;
+import com.mnesa.backend.modules.opportunity.repository.OpportunityActivityRepository;
+import com.mnesa.backend.modules.opportunity.repository.OpportunityRepository;
+import com.mnesa.backend.modules.opportunity.repository.TagRepository;
+import com.mnesa.backend.modules.reminder.repository.ReminderRepository;
 import com.mnesa.backend.modules.auth.repository.AuthIdentityRepository;
 import com.mnesa.backend.modules.auth.repository.PasswordResetTokenRepository;
 import com.mnesa.backend.modules.auth.repository.RefreshTokenRepository;
@@ -58,6 +62,18 @@ class UserServiceTest {
 
     @Mock
     private AttachmentRepository attachmentRepository;
+
+    @Mock
+    private ReminderRepository reminderRepository;
+
+    @Mock
+    private OpportunityRepository opportunityRepository;
+
+    @Mock
+    private OpportunityActivityRepository opportunityActivityRepository;
+
+    @Mock
+    private TagRepository tagRepository;
 
     @InjectMocks
     private UserService userService;
@@ -144,12 +160,16 @@ class UserServiceTest {
 
         userService.deleteAccount(userId);
 
+        verify(reminderRepository).deleteByUserId(userId);
+        verify(opportunityActivityRepository).deleteByUserId(userId);
+        verify(opportunityRepository).deleteByUserId(userId);
+        verify(tagRepository).deleteByUserId(userId);
+        verify(attachmentRepository).deleteByUserId(userId);
         verify(deviceInstallationRepository).deleteByUserId(userId);
         verify(refreshTokenRepository).deleteByUserId(userId);
         verify(passwordResetTokenRepository).deleteByUserId(userId);
         verify(authIdentityRepository).deleteByUserId(userId);
         verify(userPreferencesRepository).deleteByUserId(userId);
-        verify(attachmentRepository).deleteByUserId(userId);
         verify(userRepository).delete(mockUser);
     }
 }

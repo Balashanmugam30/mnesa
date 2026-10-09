@@ -72,6 +72,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Access denied on [{}]: {}", request.getRequestURI(), ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setType(URI.create(BASE_PROBLEM_URI + "access-denied"));
+        problem.setTitle("Forbidden");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        enrichProblemDetail(problem, "ACCESS_DENIED");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleGeneralException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled internal server error on [{}]", request.getRequestURI(), ex);

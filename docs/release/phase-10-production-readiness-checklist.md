@@ -62,7 +62,16 @@ As part of the Phase 10 Production Readiness milestone, an exhaustive technical 
 | **TST-08** | Website Playwright E2E and smoke test suite passes cleanly | `npx playwright test` (26 tests) | **PASS** |
 | **TST-09** | Docker Compose development stack config syntax valid | `docker compose -f compose.dev.yml config`| **PASS** |
 
-### 2.4 External Release Gates (Outstanding Prerequisites)
+### 2.4 Operational & Recovery Gates
+
+| Item | Requirement | Verification Method | Status |
+|------|-------------|-------------------|--------|
+| **OPS-01** | Backup & recovery procedures documented | `docs/operations/backup-and-restore.md` | **PASS** |
+| **OPS-02** | Live PostgreSQL database restore drill | Executed against live production cluster | **NOT RUN** |
+| **OPS-03** | End-to-end live FCM push notification delivery drill | Live APNs/FCM receipt on physical device | **BLOCKED** (Needs `GATE-01`) |
+| **OPS-04** | Live production Gemini API quota stress test | Live upstream inference quota check | **BLOCKED** (Needs `GATE-02`) |
+
+### 2.5 External Release Gates (Outstanding Prerequisites)
 
 | Gate ID | Area | Prerequisite Description | Responsible Party | Current Status |
 |---------|------|--------------------------|-------------------|----------------|
@@ -74,7 +83,20 @@ As part of the Phase 10 Production Readiness milestone, an exhaustive technical 
 
 ---
 
-## 3. Go / No-Go Launch Recommendation
+## 3. Empirical Fact Reconciliation
+
+| Area | Documented Claim | Empirical Codebase Reality | Reconciliation & Resolution |
+|------|------------------|----------------------------|-----------------------------|
+| **Object Storage (MinIO / S3)** | Prior documents referenced MinIO S3 object storage for attachment binaries. | `IntakeService.java` persists attachments with `storagePath: "inline_base64"` directly in PostgreSQL; MinIO exists only as a Docker development service. | Reconciled: MinIO S3 client upload is an architectural target, not an active code path in v1.0. No binary files are stored in MinIO. |
+| **Backup Drills** | Runbook defines RPO/RTO and recovery procedures. | Runbook procedures in `docs/operations/backup-and-restore.md` are documented operational standards, but live database restore drills were not performed. | Status officially recorded as **NOT RUN**. Scheduled for staging rehearsal prior to public launch. |
+| **Security Assertions** | Prior summaries stated "zero vulnerabilities". | Empirical testing verified no critical or high severity vulnerabilities discovered during static analysis, automated integration tests, and simulated penetration vectors. | Framing corrected: Security controls are empirically tested and hardened; absolute infallibility is not claimed. |
+| **Cross-Account IDOR** | Described as protected by architectural design. | Empirically verified via `CrossAccountIsolationAndIdorIntegrationTest` (8 tests passing), covering opportunity read, update, archive, delete, snooze, and keyword search isolation. | Fully verified and verified with regression tests. |
+| **Account Deletion** | Relied on database-level foreign key cascades. | In environments without Flyway (e.g. H2 in-memory test profiles), orphaned records could remain. | Hardened: `UserService.deleteAccount()` now enforces application-level cascading deletion across all repositories with `@Modifying(clearAutomatically = true)`. |
+| **Remote CI Status** | Android CI and AI Service CI runs on GitHub reflect commit `06faa85`. | GitHub Actions workflows `.github/workflows/ci-android.yml` and `ci-ai-service.yml` employ path filters that did not trigger on subsequent commits modifying other tiers. | Verified: Local testing on `fd67d67` confirmed 100% build and test pass, including debug APK packaging (`app-debug.apk`, 16.1 MB). |
+
+---
+
+## 4. Go / No-Go Launch Recommendation
 
 ### Technical Assessment: **GO**
 All software engineering, architectural invariants, security defenses, and automated verification suites are verified in the repository.

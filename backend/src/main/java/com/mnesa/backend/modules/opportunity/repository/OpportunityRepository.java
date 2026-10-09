@@ -6,6 +6,7 @@ import com.mnesa.backend.modules.opportunity.domain.OpportunityType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -68,4 +69,7 @@ public interface OpportunityRepository extends JpaRepository<Opportunity, UUID>,
 
     List<Opportunity> findTop20ByUserIdAndStatusNotOrderByCreatedAtDesc(UUID userId, OpportunityStatus excludedStatus);
 
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM Opportunity o WHERE o.userId = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 }
