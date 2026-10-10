@@ -27,7 +27,7 @@ public class UserPreferences {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Convert(converter = StringListConverter.class)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.ARRAY)
     @Column(name = "interests")
     @Builder.Default
     private List<String> interests = new ArrayList<>();

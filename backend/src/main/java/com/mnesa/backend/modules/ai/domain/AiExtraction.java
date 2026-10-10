@@ -97,13 +97,16 @@ public class AiExtraction {
     @Column(name = "priority_reason", length = 255)
     private String priorityReason;
 
-    @Column(name = "extracted_fields", columnDefinition = "TEXT")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "extracted_fields", columnDefinition = "jsonb")
     private String extractedFields;
 
-    @Column(name = "evidence_snippets", columnDefinition = "TEXT")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "evidence_snippets", columnDefinition = "jsonb")
     private String evidenceSnippets;
 
-    @Column(name = "warning_messages", columnDefinition = "TEXT")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "warning_messages", columnDefinition = "jsonb")
     private String warningMessages;
 
     @Column(name = "error_category", length = 50)

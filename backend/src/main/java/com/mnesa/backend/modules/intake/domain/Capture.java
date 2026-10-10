@@ -55,7 +55,8 @@ public class Capture {
     @Column(name = "media_storage_path", length = 1024)
     private String mediaStoragePath;
 
-    @Column(name = "metadata", columnDefinition = "TEXT")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "metadata", columnDefinition = "jsonb")
     private String metadata;
 
 

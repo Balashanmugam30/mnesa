@@ -62,10 +62,15 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
     @Override
     protected void initViews() {
         opportunityId = getIntent().getStringExtra(EXTRA_OPPORTUNITY_ID);
-        if (opportunityId == null || opportunityId.isEmpty()) {
-            Toast.makeText(this, "Opportunity ID not provided", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+        if ((opportunityId == null || opportunityId.isEmpty()) && getIntent().getData() != null) {
+            android.net.Uri data = getIntent().getData();
+            opportunityId = data.getQueryParameter("id");
+            if (opportunityId == null || opportunityId.isEmpty()) {
+                String lastSegment = data.getLastPathSegment();
+                if (lastSegment != null && !lastSegment.equalsIgnoreCase("opportunity")) {
+                    opportunityId = lastSegment;
+                }
+            }
         }
 
         setSupportActionBar(binding.toolbar);
@@ -82,6 +87,12 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
         reminderRepository = new ReminderRepositoryImpl(db.reminderDao(), ApiClient.getInstance(this).getReminderApiService());
 
         viewModel = new OpportunityDetailViewModel(oppRepo, userId);
+
+        if (opportunityId == null || opportunityId.isEmpty()) {
+            Toast.makeText(this, "Opportunity ID not provided", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         binding.btnEditOpportunity.setOnClickListener(v -> {
             EditOpportunityActivity.start(this, opportunityId);
@@ -113,6 +124,7 @@ public class OpportunityDetailActivity extends BaseActivity<ActivityOpportunityD
 
     @Override
     protected void observeViewModel() {
+        if (viewModel == null) return;
         viewModel.getIsLoading().observe(this, loading -> {
             binding.progressBar.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
         });

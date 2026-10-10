@@ -38,11 +38,6 @@ public class EditOpportunityActivity extends BaseActivity<ActivityEditOpportunit
     @Override
     protected void initViews() {
         opportunityId = getIntent().getStringExtra(EXTRA_OPPORTUNITY_ID);
-        if (opportunityId == null || opportunityId.isEmpty()) {
-            Toast.makeText(this, "Opportunity ID not provided", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         binding.toolbar.setNavigationOnClickListener(v -> finish());
         binding.toolbar.setTitle("Edit Opportunity");
@@ -55,6 +50,12 @@ public class EditOpportunityActivity extends BaseActivity<ActivityEditOpportunit
         OpportunityRepositoryImpl oppRepo = new OpportunityRepositoryImpl(this);
 
         viewModel = new EditOpportunityViewModel(oppRepo, userId);
+
+        if (opportunityId == null || opportunityId.isEmpty()) {
+            Toast.makeText(this, "Opportunity ID not provided", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         binding.btnCancel.setOnClickListener(v -> finish());
         binding.btnSave.setOnClickListener(v -> submitEditForm());
@@ -80,6 +81,7 @@ public class EditOpportunityActivity extends BaseActivity<ActivityEditOpportunit
 
     @Override
     protected void observeViewModel() {
+        if (viewModel == null) return;
         viewModel.getIsSaving().observe(this, saving -> {
             binding.progressBar.setVisibility(Boolean.TRUE.equals(saving) ? View.VISIBLE : View.GONE);
             binding.btnSave.setEnabled(!Boolean.TRUE.equals(saving));
