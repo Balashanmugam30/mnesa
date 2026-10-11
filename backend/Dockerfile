@@ -32,4 +32,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
   CMD wget -q --spider http://localhost:${PORT}/actuator/health || exit 1
 
-ENTRYPOINT ["sh", "-c", "exec java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-staging} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xms128m -Xmx384m -Xss512k -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-staging} -jar app.jar"]

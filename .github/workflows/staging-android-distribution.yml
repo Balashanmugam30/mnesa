@@ -1,0 +1,167 @@
+name: Staging Android Build & Firebase Distribution
+
+on:
+  push:
+    branches:
+      - 'staging/**'
+      - 'staging'
+    paths:
+      - 'android/**'
+      - '.github/workflows/staging-android-distribution.yml'
+  workflow_dispatch:
+    inputs:
+      backend_url:
+        description: 'Override Backend API URL'
+        required: false
+        default: 'https://mnesa-backend.onrender.com/api/v1/'
+
+jobs:
+  validate-build-distribute:
+    name: Build, Verify and Distribute Staging APK
+    runs-on: ubuntu-latest
+
+    env:
+      DEFAULT_API_URL: 'https://mnesa-backend.onrender.com/api/v1/'
+      FIREBASE_APP_ID: '1:1022524028239:android:e0eb05430bb77c2574413a'
+      FIREBASE_PROJECT_ID: 'mnesa-app'
+      FIREBASE_TESTER_EMAIL: 'harshabala47@gmail.com'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Determine Effective API URL
+        id: api-url
+        run: |
+          TARGET_URL="${{ inputs.backend_url }}"
+          if [ -z "$TARGET_URL" ]; then
+            TARGET_URL="${{ secrets.MNESA_STAGING_API_URL }}"
+          fi
+          if [ -z "$TARGET_URL" ]; then
+            TARGET_URL="$DEFAULT_API_URL"
+          fi
+          echo "target_url=$TARGET_URL" >> $GITHUB_OUTPUT
+
+      - name: Validate Staging Endpoint Security
+        run: |
+          URL="${{ steps.api-url.outputs.target_url }}"
+          echo "Validating target API URL: $URL"
+          
+          # Rule: Must be HTTPS
+          if [[ ! "$URL" =~ ^https:// ]]; then
+            echo "ERROR: API URL must use HTTPS for remote staging builds. Got: $URL"
+            exit 1
+          fi
+
+          # Rule: Must not be localhost, 127.0.0.1, or emulator IP 10.0.2.2
+          if [[ "$URL" =~ localhost ]] || [[ "$URL" =~ 127\.0\.0\.1 ]] || [[ "$URL" =~ 10\.0\.2\.2 ]]; then
+            echo "ERROR: Localhost / emulator addresses are forbidden in physical-phone staging builds."
+            exit 1
+          fi
+
+          echo "URL security validation PASSED."
+
+      - name: Verify Live Backend Health Check
+        run: |
+          BASE_URL="${{ steps.api-url.outputs.target_url }}"
+          HEALTH_URL="${BASE_URL}health"
+          echo "Checking backend health at: $HEALTH_URL"
+
+          # Attempt health check with retries to tolerate Render free-tier cold starts
+          MAX_RETRIES=6
+          DELAY=10
+          SUCCESS=0
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Health check attempt $i of $MAX_RETRIES..."
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -m 30 "$HEALTH_URL" || true)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Backend health check passed with HTTP 200 OK!"
+              SUCCESS=1
+              break
+            fi
+            echo "Response code: $HTTP_CODE. Waiting ${DELAY}s for cold-start..."
+            sleep $DELAY
+          done
+
+          if [ "$SUCCESS" -ne 1 ]; then
+            echo "ERROR: Backend health check failed after $MAX_RETRIES attempts. Aborting staging build."
+            exit 1
+          fi
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew
+
+      - name: Run Android Unit Tests
+        working-directory: android
+        run: ./gradlew testDebugUnitTest --no-daemon
+
+      - name: Assemble Debug APK with Staging URL
+        working-directory: android
+        run: |
+          ./gradlew assembleDebug -PMNESA_API_URL="${{ steps.api-url.outputs.target_url }}" --no-daemon
+
+      - name: Validate Generated BuildConfig Invariants
+        run: |
+          CONFIG_FILE="android/app/build/generated/source/buildConfig/debug/com/mnesa/android/BuildConfig.java"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "ERROR: Generated BuildConfig.java not found at $CONFIG_FILE"
+            exit 1
+          fi
+          
+          echo "Inspecting $CONFIG_FILE:"
+          grep "BASE_URL" "$CONFIG_FILE"
+          
+          if grep -q "10.0.2.2" "$CONFIG_FILE"; then
+            echo "FATAL: BuildConfig contains emulator IP 10.0.2.2!"
+            exit 1
+          fi
+          
+          if ! grep -q "https://" "$CONFIG_FILE"; then
+            echo "FATAL: BuildConfig does not contain HTTPS staging URL!"
+            exit 1
+          fi
+          echo "BuildConfig invariant verification PASSED."
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mnesa-staging-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Distribute to Firebase App Distribution
+        run: |
+          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          NOTES="MNESA Staging Build (Commit: ${SHORT_SHA}, Ref: ${{ github.ref_name }}) - Pointing to ${{ steps.api-url.outputs.target_url }}"
+
+          if [ -n "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "Distributing using FIREBASE_TOKEN..."
+            npx firebase-tools appdistribution:distribute "$APK_PATH" \
+              --app "$FIREBASE_APP_ID" \
+              --release-notes "$NOTES" \
+              --testers "$FIREBASE_TESTER_EMAIL" \
+              --project "$FIREBASE_PROJECT_ID" \
+              --token "${{ secrets.FIREBASE_TOKEN }}"
+          elif [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+            echo "Distributing using FIREBASE_SERVICE_ACCOUNT..."
+            echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > /tmp/firebase-sa.json
+            GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json npx firebase-tools appdistribution:distribute "$APK_PATH" \
+              --app "$FIREBASE_APP_ID" \
+              --release-notes "$NOTES" \
+              --testers "$FIREBASE_TESTER_EMAIL" \
+              --project "$FIREBASE_PROJECT_ID"
+            rm -f /tmp/firebase-sa.json
+          else
+            echo "WARNING: Neither FIREBASE_TOKEN nor FIREBASE_SERVICE_ACCOUNT secret is set in GitHub repository settings."
+            echo "The APK was successfully tested, built, and uploaded as a GitHub Actions workflow artifact."
+            echo "To enable automatic Firebase Distribution on push, add FIREBASE_TOKEN or FIREBASE_SERVICE_ACCOUNT to repo secrets."
+          fi
