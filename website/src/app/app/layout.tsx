@@ -45,12 +45,13 @@ function AppNavigationWrapper({ children }: { children: React.ReactNode }) {
   const userInitials = user?.fullName ? user.fullName[0].toUpperCase() : undefined;
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-slate-50 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 overflow-x-hidden selection:bg-blue-500/20">
+    <div className="relative flex flex-col min-h-screen bg-[#F1F5F9] dark:bg-[#070B14] text-slate-900 dark:text-slate-100 overflow-x-hidden selection:bg-blue-500/20">
       {/* Dynamic Ambient Mesh Canvas for Authentic Glass Refraction */}
       <div className="ambient-mesh-canvas" aria-hidden="true">
         <div className="ambient-orb-primary" />
         <div className="ambient-orb-secondary" />
         <div className="ambient-orb-accent" />
+        <div className="ambient-orb-glow" />
       </div>
 
       {/* Top Liquid Glass Header */}
