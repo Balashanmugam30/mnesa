@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:8080 http://localhost:8080 http://127.0.0.1:3100 http://localhost:3000; frame-ancestors 'none';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://mnesa-backend.onrender.com https://mnesa-ai-service.onrender.com https://*.onrender.com http://127.0.0.1:8080 http://localhost:8080 http://127.0.0.1:3100 http://localhost:3000; frame-ancestors 'none';",
           },
         ],
       },
