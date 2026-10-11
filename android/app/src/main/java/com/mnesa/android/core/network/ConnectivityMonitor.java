@@ -42,14 +42,12 @@ public class ConnectivityMonitor {
 
         @Override
         public void onLost(@NonNull Network network) {
-            wasOffline = true;
-            stateSubject.onNext(ConnectionState.OFFLINE);
+            checkInitialState();
         }
 
         @Override
         public void onUnavailable() {
-            wasOffline = true;
-            stateSubject.onNext(ConnectionState.OFFLINE);
+            checkInitialState();
         }
     };
 
@@ -69,7 +67,13 @@ public class ConnectivityMonitor {
         if (activeNetwork != null) {
             NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
             if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                stateSubject.onNext(ConnectionState.ONLINE);
+                if (wasOffline) {
+                    wasOffline = false;
+                    stateSubject.onNext(ConnectionState.RECONNECTING);
+                    mainHandler.postDelayed(() -> stateSubject.onNext(ConnectionState.ONLINE), 1000);
+                } else {
+                    stateSubject.onNext(ConnectionState.ONLINE);
+                }
                 return;
             }
         }
@@ -80,13 +84,18 @@ public class ConnectivityMonitor {
     public synchronized void startMonitoring() {
         if (isRegistered || connectivityManager == null) return;
         try {
-            NetworkRequest request = new NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    .build();
-            connectivityManager.registerNetworkCallback(request, networkCallback);
+            connectivityManager.registerDefaultNetworkCallback(networkCallback);
             isRegistered = true;
         } catch (Exception e) {
-            checkInitialState();
+            try {
+                NetworkRequest request = new NetworkRequest.Builder()
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .build();
+                connectivityManager.registerNetworkCallback(request, networkCallback);
+                isRegistered = true;
+            } catch (Exception ex) {
+                checkInitialState();
+            }
         }
     }
 

@@ -56,6 +56,14 @@ public class SyncWorker extends Worker {
                                     capture.setBackendJobId(apiResponse.getData().getJobId());
                                     captureDao.update(capture).blockingAwait();
                                 }
+                                try {
+                                    com.mnesa.android.data.local.entity.OpportunityEntity opp = db.opportunityDao().getOpportunityById(op.getEntityId(), op.getUserId()).blockingGet();
+                                    if (opp != null) {
+                                        opp.setSyncState("SYNCED");
+                                        db.opportunityDao().updateOpportunity(opp).blockingAwait();
+                                    }
+                                } catch (Exception ignored) {
+                                }
                             }
                         } catch (Exception ex) {
                             op.setState("FAILED");

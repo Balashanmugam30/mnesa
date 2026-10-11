@@ -23,6 +23,11 @@ public class IntakePayloadParser {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static final Pattern WWW_PATTERN = Pattern.compile(
+            "\\bwww\\.[a-zA-Z0-9\\-\\._~:/?#\\[\\]@!$&'()*+,;=%]+",
+            Pattern.CASE_INSENSITIVE
+    );
+
     public IntakePayload parse(Intent intent, ContentResolver contentResolver) {
         if (intent == null) {
             return new IntakePayload(null, null, null, "UNSUPPORTED", null, null, 0, false, "Intent was null");
@@ -42,12 +47,49 @@ public class IntakePayloadParser {
             }
         }
 
+        // Fallback 1: Extract URI text if intent.getData() is provided
+        if ((sharedText == null || sharedText.isBlank()) && intent.getData() != null) {
+            sharedText = intent.getDataString();
+        }
+
         // Image stream handling
         Uri imageUri = null;
         if (intent.hasExtra(Intent.EXTRA_STREAM)) {
             try {
                 imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             } catch (Exception ignored) {}
+        }
+
+        // Fallback 2: Check ClipData for shared text or image URI
+        android.content.ClipData clipData = intent.getClipData();
+        if (clipData != null && clipData.getItemCount() > 0) {
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                android.content.ClipData.Item item = clipData.getItemAt(i);
+                if (item != null) {
+                    if ((sharedText == null || sharedText.isBlank()) && item.getText() != null) {
+                        sharedText = item.getText().toString();
+                    }
+                    if (imageUri == null && item.getUri() != null) {
+                        Uri uri = item.getUri();
+                        String scheme = uri.getScheme();
+                        if ("content".equalsIgnoreCase(scheme) || "file".equalsIgnoreCase(scheme)) {
+                            imageUri = uri;
+                        } else if ((sharedText == null || sharedText.isBlank()) && ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))) {
+                            sharedText = uri.toString();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Fallback 3: Enrich with EXTRA_SUBJECT if present
+        String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        if (subject != null && !subject.isBlank()) {
+            if (sharedText == null || sharedText.isBlank()) {
+                sharedText = subject.trim();
+            } else if (!sharedText.contains(subject.trim())) {
+                sharedText = subject.trim() + "\n" + sharedText.trim();
+            }
         }
 
         // Extract URL from shared text if present
@@ -107,14 +149,22 @@ public class IntakePayloadParser {
         }
         Matcher matcher = URL_PATTERN.matcher(text);
         if (matcher.find()) {
-            String url = matcher.group();
-            while (url.endsWith("!") || url.endsWith(".") || url.endsWith(",") ||
-                   url.endsWith("?") || url.endsWith(";") || url.endsWith(")") || url.endsWith("]")) {
-                url = url.substring(0, url.length() - 1);
-            }
-            return url;
+            return cleanTrailingPunctuation(matcher.group());
+        }
+        Matcher wwwMatcher = WWW_PATTERN.matcher(text);
+        if (wwwMatcher.find()) {
+            return "https://" + cleanTrailingPunctuation(wwwMatcher.group());
         }
         return null;
+    }
+
+    private String cleanTrailingPunctuation(String url) {
+        if (url == null) return null;
+        while (url.endsWith("!") || url.endsWith(".") || url.endsWith(",") ||
+               url.endsWith("?") || url.endsWith(";") || url.endsWith(")") || url.endsWith("]")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        return url;
     }
 
     public String extractDomain(String rawUrl) {

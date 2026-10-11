@@ -32,6 +32,6 @@ public final class SyncScheduler {
                 .build();
 
         WorkManager.getInstance(context.getApplicationContext())
-                .enqueueUniqueWork(SYNC_WORK_NAME, ExistingWorkPolicy.KEEP, syncRequest);
+                .enqueueUniqueWork(SYNC_WORK_NAME, ExistingWorkPolicy.REPLACE, syncRequest);
     }
 }

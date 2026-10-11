@@ -71,6 +71,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="mnesa" android:host="opportunity" />
             </intent-filter>
+            <!-- Web App Links for MNESA platform -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mnesa.ai" android:pathPrefix="/opportunity" />
+                <data android:scheme="http" android:host="mnesa.ai" android:pathPrefix="/opportunity" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -118,23 +126,29 @@
         <activity
             android:name=".presentation.capture.CaptureActivity"
             android:exported="true"
+            android:label="@string/app_name"
+            android:icon="@drawable/ic_mnesa_logo"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.Mnesa.TransparentCapture">
 
-            <!-- Single Share Intent Filter -->
-            <intent-filter>
+            <!-- Single Share Intent Filter (supports text/plain and text/*) -->
+            <intent-filter android:label="@string/app_name" android:priority="100">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
+                <data android:mimeType="text/*" />
             </intent-filter>
 
-            <intent-filter>
+            <!-- Single Share Intent Filter for Images -->
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
             </intent-filter>
 
-            <!-- Multiple Share Intent Filter -->
-            <intent-filter>
+            <!-- Multiple Share Intent Filter for Images -->
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />

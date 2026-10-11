@@ -79,4 +79,40 @@ public class IntakePayloadParserTest {
         assertEquals("linkedin.com", parser.extractDomain("https://www.linkedin.com/jobs/view/123"));
         assertEquals("x.com", parser.extractDomain("https://x.com/internships/status/456"));
     }
+
+    @Test
+    public void testParseIntentDataFallbackWhenExtraTextNull() {
+        when(intent.getAction()).thenReturn(Intent.ACTION_SEND);
+        when(intent.getType()).thenReturn("text/plain");
+        when(intent.getStringExtra(Intent.EXTRA_TEXT)).thenReturn(null);
+        android.net.Uri mockUri = org.mockito.Mockito.mock(android.net.Uri.class);
+        when(intent.getData()).thenReturn(mockUri);
+        when(intent.getDataString()).thenReturn("https://devpost.com/hackathons/example");
+
+        IntakePayload payload = parser.parse(intent, null);
+        assertNotNull(payload);
+        assertTrue(payload.isValid());
+        assertEquals("URL", payload.getSourceType());
+        assertEquals("https://devpost.com/hackathons/example", payload.getExtractedUrl());
+    }
+
+    @Test
+    public void testParseWithSubjectEnriched() {
+        when(intent.getAction()).thenReturn(Intent.ACTION_SEND);
+        when(intent.getType()).thenReturn("text/plain");
+        when(intent.getStringExtra(Intent.EXTRA_SUBJECT)).thenReturn("Google Summer Internship 2026");
+        when(intent.getStringExtra(Intent.EXTRA_TEXT)).thenReturn("https://careers.google.com/jobs/results/999");
+
+        IntakePayload payload = parser.parse(intent, null);
+        assertNotNull(payload);
+        assertTrue(payload.isValid());
+        assertTrue(payload.getRawText().contains("Google Summer Internship 2026"));
+        assertEquals("https://careers.google.com/jobs/results/999", payload.getExtractedUrl());
+    }
+
+    @Test
+    public void testExtractUrlWithWwwFallback() {
+        String url = parser.extractUrl("Check out this opportunity: www.devpost.com/hackathons/ai-summit!");
+        assertEquals("https://www.devpost.com/hackathons/ai-summit", url);
+    }
 }

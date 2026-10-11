@@ -155,6 +155,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (connectivityMonitor != null && connectivityMonitor.isOnline()) {
+            SyncScheduler.triggerSync(this);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         disposables.clear();
