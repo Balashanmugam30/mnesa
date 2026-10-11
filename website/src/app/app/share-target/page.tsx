@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api-client";
+import { GlassCard, GlassButton } from "@/components/glass";
 
 function ShareTargetHandler() {
   const router = useRouter();
@@ -91,31 +92,35 @@ function ShareTargetHandler() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 space-y-4">
       {error ? (
-        <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl p-6 max-w-sm space-y-3">
-          <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400 mx-auto" />
-          <p className="text-xs text-red-700 dark:text-red-300 font-medium">{error}</p>
-          <button
+        <GlassCard elevated={true} className="p-6 max-w-sm w-full space-y-3 !border-red-500/30">
+          <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
+          <p className="text-xs text-red-600 dark:text-red-400 font-semibold">{error}</p>
+          <GlassButton
             onClick={() => router.push("/app/capture")}
-            className="w-full py-2.5 px-4 rounded-xl bg-blue-600 text-white text-xs font-bold"
+            variant="primary"
+            size="md"
+            className="w-full"
           >
-            Go to Capture Screen
-          </button>
-        </div>
+            Manual Capture
+          </GlassButton>
+        </GlassCard>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 max-w-sm w-full space-y-4 shadow-sm">
-          <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto">
-            <Loader2 className="w-7 h-7 animate-spin" />
+        <GlassCard elevated={true} className="p-8 max-w-sm w-full space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white mx-auto shadow-lg shadow-blue-500/30 border border-white/40">
+            <Loader2 className="w-8 h-8 animate-spin" />
           </div>
-          <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Shared Opportunity Received
+          <div className="space-y-1">
+            <h2 className="font-extrabold text-base text-slate-900 dark:text-white tracking-tight">
+              Ingesting Shared Opportunity
             </h2>
-            <p className="text-xs text-slate-500 mt-2 font-medium">{status}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {status}
+            </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-blue-600 h-full rounded-full animate-pulse w-3/4" />
+          <div className="w-full bg-slate-200/50 dark:bg-slate-800/50 rounded-full h-1.5 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-500 h-full rounded-full animate-pulse w-4/5" />
           </div>
-        </div>
+        </GlassCard>
       )}
     </div>
   );
@@ -126,7 +131,7 @@ export default function ShareTargetPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
         </div>
       }
     >

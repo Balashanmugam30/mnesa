@@ -12,16 +12,21 @@ import {
   Bell,
   Trash2,
   Archive,
-  RefreshCw,
   CheckCircle2,
   AlertCircle,
-  Share2,
   Plus,
   Loader2,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, OpportunityDetail, ReminderItem } from "@/lib/api-client";
+import {
+  GlassCard,
+  GlassButton,
+  GlassBadge,
+  GlassSurface,
+} from "@/components/glass";
 
 export default function OpportunityDetailPage({
   params,
@@ -147,25 +152,25 @@ export default function OpportunityDetailPage({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        <p className="text-xs text-slate-500 font-medium">Loading opportunity details...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" />
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading opportunity details...</p>
       </div>
     );
   }
 
   if (error || !opp) {
     return (
-      <div className="p-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-center space-y-3">
-        <AlertCircle className="w-8 h-8 text-red-600 mx-auto" />
-        <p className="text-xs text-red-700 dark:text-red-300 font-medium">{error || "Opportunity not found"}</p>
+      <GlassCard className="p-6 text-center space-y-3 !border-red-500/30">
+        <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
+        <p className="text-xs text-red-600 dark:text-red-400 font-semibold">{error || "Opportunity not found"}</p>
         <Link
           href="/app"
-          className="inline-flex items-center space-x-2 text-xs font-bold text-blue-600 underline"
+          className="inline-flex items-center space-x-2 text-xs font-bold text-blue-600 dark:text-blue-400 underline"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Feed</span>
         </Link>
-      </div>
+      </GlassCard>
     );
   }
 
@@ -178,17 +183,17 @@ export default function OpportunityDetailPage({
       <div className="flex items-center justify-between">
         <Link
           href="/app"
-          className="p-2 -ml-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center space-x-1 text-xs font-semibold"
+          className="p-2 -ml-2 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center space-x-1.5 text-xs font-bold"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </Link>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1.5">
           <button
             onClick={handleArchive}
             disabled={updating}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="w-9 h-9 rounded-2xl liquid-glass-btn-secondary flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
             title={opp.isArchived ? "Restore" : "Archive"}
           >
             <Archive className="w-4 h-4" />
@@ -196,7 +201,7 @@ export default function OpportunityDetailPage({
           <button
             onClick={handleDelete}
             disabled={updating}
-            className="p-2 rounded-xl text-red-500 hover:text-red-700 transition-colors"
+            className="w-9 h-9 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -204,20 +209,20 @@ export default function OpportunityDetailPage({
         </div>
       </div>
 
-      {/* Main Details Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      {/* Main Details Liquid Glass Card */}
+      <GlassCard elevated={true} className="p-5 space-y-4">
         {/* Category & Status Row */}
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+          <GlassBadge variant="blue" size="sm">
             {opp.category || "GENERAL"}
-          </span>
+          </GlassBadge>
 
           {/* Status Selector */}
           <select
             value={opp.status}
             onChange={(e) => handleStatusChange(e.target.value)}
             disabled={updating}
-            className="text-xs font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="text-xs font-bold px-3 py-1.5 rounded-xl liquid-glass-input text-slate-900 dark:text-white focus:outline-none"
           >
             <option value="NEW">Status: NEW</option>
             <option value="APPLIED">Status: APPLIED</option>
@@ -230,12 +235,12 @@ export default function OpportunityDetailPage({
 
         {/* Title & Organization */}
         <div>
-          <h1 className="text-lg font-black text-slate-900 dark:text-white leading-snug">
+          <h1 className="text-lg font-black text-slate-900 dark:text-white leading-snug tracking-tight">
             {opp.title}
           </h1>
           {opp.organization && (
-            <p className="text-xs text-slate-500 flex items-center space-x-1.5 mt-1 font-medium">
-              <Building2 className="w-3.5 h-3.5" />
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1.5 mt-1 font-semibold">
+              <Building2 className="w-3.5 h-3.5 opacity-70" />
               <span>{opp.organization}</span>
             </p>
           )}
@@ -243,23 +248,27 @@ export default function OpportunityDetailPage({
 
         {/* Deadline Information */}
         <div
-          className={`p-3.5 rounded-xl border flex items-center justify-between ${
+          className={`p-3.5 rounded-2xl border flex items-center justify-between backdrop-blur-md ${
             isExpired
-              ? "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700"
-              : "bg-blue-50/50 dark:bg-blue-950/30 border-blue-200/60 dark:border-blue-900/40"
+              ? "bg-slate-500/10 border-slate-500/20 text-slate-400"
+              : "bg-blue-500/10 border-blue-400/30 text-blue-900 dark:text-blue-100"
           }`}
         >
           <div className="flex items-center space-x-3">
             <div
-              className={`p-2 rounded-lg ${
-                isExpired ? "bg-slate-200 dark:bg-slate-700 text-slate-500" : "bg-blue-600 text-white"
+              className={`p-2 rounded-xl ${
+                isExpired
+                  ? "bg-slate-500/20 text-slate-400"
+                  : "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-sm"
               }`}
             >
               <Calendar className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Deadline</p>
-              <p className="text-xs font-black text-slate-900 dark:text-white">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Deadline
+              </p>
+              <p className="text-xs font-black text-slate-900 dark:text-white mt-0.5">
                 {deadlineDate
                   ? deadlineDate.toLocaleDateString(undefined, {
                       weekday: "short",
@@ -274,7 +283,7 @@ export default function OpportunityDetailPage({
             </div>
           </div>
           {isExpired && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/20 text-slate-400">
               Expired
             </span>
           )}
@@ -286,38 +295,38 @@ export default function OpportunityDetailPage({
             href={opp.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 px-3 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/40 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center space-x-2 hover:bg-blue-50 transition-colors"
+            className="w-full py-2.5 px-3.5 rounded-xl liquid-glass-btn-secondary text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center space-x-2 transition-all"
           >
-            <span>Open Original Source</span>
+            <span>Open Original Source Link</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         )}
 
         {/* Notes / Description */}
         {(opp.notes || opp.description) && (
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="pt-3 border-t border-slate-200/50 dark:border-white/10">
             <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
               Extracted Notes & Details
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-medium">
               {opp.notes || opp.description}
             </p>
           </div>
         )}
-      </div>
+      </GlassCard>
 
       {/* Reminders Section */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+      <GlassCard className="p-5 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Bell className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <h2 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
               Smart Reminders
             </h2>
           </div>
           <button
             onClick={() => setShowReminderModal(true)}
-            className="inline-flex items-center space-x-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="inline-flex items-center space-x-1 text-[11px] font-bold text-blue-600 dark:text-blue-400"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Reminder</span>
@@ -325,7 +334,7 @@ export default function OpportunityDetailPage({
         </div>
 
         {reminders.length === 0 ? (
-          <p className="text-xs text-slate-500 py-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400 py-2 font-medium">
             No reminders scheduled yet. Tap &apos;Add Reminder&apos; to schedule an alert before this deadline.
           </p>
         ) : (
@@ -333,11 +342,11 @@ export default function OpportunityDetailPage({
             {reminders.map((r) => (
               <div
                 key={r.id}
-                className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex items-center justify-between text-xs"
+                className="p-3 rounded-xl bg-slate-500/10 border border-slate-400/20 flex items-center justify-between text-xs backdrop-blur-md"
               >
                 <div>
                   <p className="font-bold text-slate-900 dark:text-white">{r.title}</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                     {new Date(r.scheduledTime).toLocaleString(undefined, {
                       month: "short",
                       day: "numeric",
@@ -346,25 +355,42 @@ export default function OpportunityDetailPage({
                     })}
                   </p>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                <GlassBadge variant="blue" size="xs">
                   {r.status}
-                </span>
+                </GlassBadge>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </GlassCard>
 
-      {/* Schedule Reminder Modal */}
+      {/* Schedule Reminder Liquid Glass Modal */}
       {showReminderModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 max-w-sm w-full space-y-4 border border-slate-200 dark:border-slate-800 shadow-xl">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Schedule New Reminder
-            </h3>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-end sm:items-center justify-center p-4">
+          <GlassSurface
+            refract={true}
+            variant="surface"
+            scale={-112}
+            chroma={6}
+            mapBlur={12}
+            radius={28}
+            className="p-5 max-w-sm w-full space-y-4 border border-white/30 shadow-2xl"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                Schedule New Reminder
+              </h3>
+              <button
+                onClick={() => setShowReminderModal(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
             <form onSubmit={handleCreateReminder} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Reminder Label
                 </label>
                 <input
@@ -372,12 +398,12 @@ export default function OpportunityDetailPage({
                   value={newReminderTitle}
                   onChange={(e) => setNewReminderTitle(e.target.value)}
                   placeholder="e.g. Submit application draft"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 text-xs rounded-xl liquid-glass-input text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Alert Date & Time *
                 </label>
                 <input
@@ -385,28 +411,32 @@ export default function OpportunityDetailPage({
                   required
                   value={newReminderTime}
                   onChange={(e) => setNewReminderTime(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 text-xs rounded-xl liquid-glass-input text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
 
               <div className="flex space-x-2 pt-2">
-                <button
+                <GlassButton
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => setShowReminderModal(false)}
-                  className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+                  className="flex-1"
                 >
                   Cancel
-                </button>
-                <button
+                </GlassButton>
+                <GlassButton
                   type="submit"
-                  disabled={creatingReminder}
-                  className="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-500/20 disabled:opacity-50"
+                  variant="primary"
+                  size="sm"
+                  isLoading={creatingReminder}
+                  className="flex-1"
                 >
-                  {creatingReminder ? "Saving..." : "Set Reminder"}
-                </button>
+                  Set Reminder
+                </GlassButton>
               </div>
             </form>
-          </div>
+          </GlassSurface>
         </div>
       )}
     </div>

@@ -19,6 +19,11 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { api, BackendHealth } from "@/lib/api-client";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import {
+  GlassCard,
+  GlassBadge,
+  GlassButton,
+} from "@/components/glass";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -121,54 +126,58 @@ export default function SettingsPage() {
     <div className="space-y-4">
       {/* Title */}
       <div>
-        <h1 className="text-lg font-black text-slate-900 dark:text-white">Settings & Diagnostics</h1>
-        <p className="text-xs text-slate-500 mt-0.5">Account info, cloud status, and PWA options.</p>
+        <h1 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+          Settings & Diagnostics
+        </h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+          Account info, cloud status, and PWA options.
+        </p>
       </div>
 
       {/* Account Info Card */}
       {user && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-full bg-blue-600 text-white font-black text-base flex items-center justify-center shrink-0 shadow-sm">
+        <GlassCard elevated={true} className="p-4 flex items-center space-x-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 text-white font-black text-lg flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 border border-white/50">
             {user.fullName ? user.fullName[0].toUpperCase() : "U"}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate tracking-tight">
               {user.fullName}
             </h2>
-            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">{user.email}</p>
           </div>
-        </div>
+        </GlassCard>
       )}
 
       {/* PWA Installation Card */}
       {!isStandalone && deferredPrompt && (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl p-4 shadow-md space-y-3">
+        <GlassCard elevated={true} className="p-5 space-y-3 !bg-gradient-to-r !from-blue-600/90 !to-indigo-600/90 text-white">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white/20 rounded-xl">
+            <div className="p-2.5 bg-white/20 rounded-2xl backdrop-blur-md">
               <Download className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-xs font-bold">Install MNESA on Android</h3>
-              <p className="text-[11px] text-blue-100">
+              <h3 className="text-xs font-black tracking-tight">Install MNESA on Android</h3>
+              <p className="text-[11px] text-blue-100 font-medium">
                 Add to your home screen for instant updates and share-sheet support!
               </p>
             </div>
           </div>
           <button
             onClick={handleInstallApp}
-            className="w-full py-2 px-3 rounded-xl bg-white text-blue-700 font-bold text-xs shadow transition-all hover:bg-blue-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-white text-blue-700 font-bold text-xs shadow-md transition-all active:scale-95"
           >
             Install to Home Screen
           </button>
-        </div>
+        </GlassCard>
       )}
 
       {/* Cloud & PWA Diagnostics Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+      <GlassCard className="p-5 space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Server className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <h2 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
               Cloud Infrastructure
             </h2>
           </div>
@@ -183,79 +192,79 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-2 text-xs">
-          <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500">API Endpoint</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-200/50 dark:border-white/10">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">API Endpoint</span>
             <span className="font-mono text-[10px] text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
               {api.getBaseUrl()}
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500">Backend Status</span>
-            <span
-              className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                health?.status === "UP"
-                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
-                  : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
-              }`}
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-200/50 dark:border-white/10">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">Backend Status</span>
+            <GlassBadge
+              variant={health?.status === "UP" ? "emerald" : "amber"}
+              size="xs"
+              dot={true}
             >
               {health?.status === "UP" ? "ONLINE (Render)" : "CONNECTING"}
-            </span>
+            </GlassBadge>
           </div>
 
-          <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500">Database</span>
-            <span className="font-mono text-[10px] text-slate-700 dark:text-slate-300">
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-200/50 dark:border-white/10">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">Database</span>
+            <span className="font-mono text-[10px] text-slate-700 dark:text-slate-300 font-semibold">
               {health?.components?.database || "PostgreSQL 16 (Render)"}
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500">App Mode</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-200/50 dark:border-white/10">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">App Mode</span>
             <span className="font-semibold text-slate-700 dark:text-slate-300">
               {isStandalone ? "📱 Standalone PWA" : "🌐 Browser Tab"}
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-1">
-            <span className="text-slate-500">Service Worker</span>
+          <div className="flex justify-between items-center py-1.5">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">Service Worker</span>
             <span className="font-semibold text-slate-700 dark:text-slate-300">{swStatus}</span>
           </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* App Appearance & Updates */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
-        <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+      <GlassCard className="p-5 space-y-3.5">
+        <h2 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
           Preferences & Updates
         </h2>
 
-        <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
-          <span className="text-xs text-slate-600 dark:text-slate-400">Theme</span>
+        <div className="flex justify-between items-center py-1 border-b border-slate-200/50 dark:border-white/10">
+          <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Theme</span>
           <ThemeToggle />
         </div>
 
-        <div className="pt-1">
-          <button
+        <div className="pt-1 space-y-2">
+          <GlassButton
             onClick={handleCheckUpdate}
-            disabled={updateChecking}
-            className="w-full py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 flex items-center justify-center space-x-2"
+            variant="secondary"
+            size="md"
+            isLoading={updateChecking}
+            className="w-full"
+            leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${updateChecking ? "animate-spin" : ""}`} />
-            <span>Check for App Updates</span>
-          </button>
+            Check for App Updates
+          </GlassButton>
           {updateMsg && (
-            <p className="text-[11px] text-center text-emerald-600 dark:text-emerald-400 font-medium mt-1.5">
+            <p className="text-[11px] text-center text-emerald-600 dark:text-emerald-400 font-semibold mt-1.5">
               {updateMsg}
             </p>
           )}
         </div>
-      </div>
+      </GlassCard>
 
       {/* Sign Out Button */}
       <button
         onClick={handleLogout}
-        className="w-full py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 border border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 font-bold text-xs transition-colors flex items-center justify-center space-x-2"
+        className="w-full py-3.5 px-4 rounded-2xl bg-red-500/10 hover:bg-red-500/15 border border-red-500/20 text-red-600 dark:text-red-400 font-bold text-xs transition-all flex items-center justify-center space-x-2 active:scale-98"
       >
         <LogOut className="w-4 h-4" />
         <span>Sign Out of MNESA</span>

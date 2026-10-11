@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogIn, AlertCircle, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
+import { LogIn, AlertCircle, ArrowRight, Sparkles, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { GlassCard, GlassButton, GlassInput } from "@/components/glass";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,91 +40,74 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col justify-center min-h-[80vh] px-2">
       {/* Brand Header */}
-      <div className="text-center mb-8">
-        <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-2xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white font-black text-2xl mx-auto mb-3 shadow-xl shadow-blue-500/30 border border-white/60">
           M
         </div>
         <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
           Welcome to MNESA
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-          Sign in to access your tracked opportunities and deadlines
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+          Liquid Opportunity Copilot — Track deadlines with zero friction
         </p>
       </div>
 
-      {/* Login Card */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      {/* Liquid Glass Login Card */}
+      <GlassCard elevated={true} className="p-6">
         {error && (
-          <div className="mb-5 p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-xs flex items-start space-x-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{error}</span>
+          <div className="mb-4 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-300 text-xs flex items-start space-x-2.5 backdrop-blur-md">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+            <span className="leading-relaxed font-medium">{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              autoComplete="email"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
+          <GlassInput
+            label="Email Address"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="harshabala47@gmail.com"
+            required
+            autoComplete="email"
+            leftIcon={<Mail className="w-4 h-4" />}
+          />
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Password
-              </label>
-            </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-          </div>
+          <GlassInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            autoComplete="current-password"
+            leftIcon={<Lock className="w-4 h-4" />}
+          />
 
-          <button
+          <GlassButton
             type="submit"
-            disabled={loading}
-            className="w-full mt-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+            variant="primary"
+            size="lg"
+            isLoading={loading}
+            className="w-full mt-2"
+            rightIcon={<ArrowRight className="w-4 h-4" />}
           >
-            {loading ? (
-              <span className="inline-flex items-center space-x-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Signing in...</span>
-              </span>
-            ) : (
-              <>
-                <span>Sign In</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+            Sign In to MNESA
+          </GlassButton>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
-          <p className="text-xs text-slate-500">
+        <div className="mt-6 pt-5 border-t border-slate-200/50 dark:border-white/10 text-center">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             Don&apos;t have an account?{" "}
             <Link
               href="/app/register"
-              className="font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors"
             >
               Create Account
             </Link>
           </p>
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 }

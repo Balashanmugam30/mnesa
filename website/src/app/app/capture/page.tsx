@@ -9,11 +9,16 @@ import {
   ArrowRight,
   AlertCircle,
   Loader2,
-  CheckCircle2,
-  ExternalLink,
+  Clipboard,
+  Lightbulb,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api-client";
+import {
+  GlassCard,
+  GlassButton,
+  GlassBadge,
+} from "@/components/glass";
 
 export default function CapturePage() {
   const router = useRouter();
@@ -52,7 +57,7 @@ export default function CapturePage() {
       try {
         const job = await api.getIntakeJob(jobId);
         if (job.status === "COMPLETED") {
-          setProcessStage("Extraction complete! Preparing review...");
+          setProcessStage("Extraction complete! Preparing liquid review...");
           setTimeout(() => {
             router.push(`/app/review?jobId=${jobId}`);
           }, 400);
@@ -116,54 +121,62 @@ export default function CapturePage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Title */}
-      <div>
-        <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center space-x-2">
-          <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="space-y-1">
+        <h1 className="text-xl font-black text-slate-900 dark:text-white flex items-center space-x-2 tracking-tight">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+            <Sparkles className="w-4 h-4" />
+          </div>
           <span>Capture Opportunity</span>
         </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Paste any job posting, scholarship, hackathon, or grant. MNESA AI extracts titles,
-          deadlines, and actions automatically.
+        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+          Paste any job posting, scholarship, hackathon, or grant. MNESA extracts titles,
+          deadlines, and actions with zero friction.
         </p>
       </div>
 
       {/* Processing State Card */}
       {isProcessing ? (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-          <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto">
-            <Loader2 className="w-7 h-7 animate-spin" />
+        <GlassCard elevated={true} className="p-8 text-center space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto border border-white/40 shadow-inner">
+            <Loader2 className="w-8 h-8 animate-spin" />
           </div>
-          <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Analyzing Opportunity</h3>
-            <p className="text-xs text-slate-500 mt-2 font-medium">{processStage}</p>
+          <div className="space-y-1">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white tracking-tight">
+              Analyzing Opportunity
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {processStage}
+            </p>
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-blue-600 h-full rounded-full animate-pulse w-3/4" />
+          <div className="w-full bg-slate-200/50 dark:bg-slate-800/50 rounded-full h-1.5 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-500 h-full rounded-full animate-pulse w-3/4" />
           </div>
-        </div>
+        </GlassCard>
       ) : (
         <form onSubmit={handleCapture} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-xs flex items-start space-x-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span className="leading-relaxed">{error}</span>
+            <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-300 text-xs flex items-start space-x-2.5 backdrop-blur-md">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+              <span className="leading-relaxed font-medium">{error}</span>
             </div>
           )}
 
-          {/* Input Box */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+          {/* Liquid Input Card */}
+          <GlassCard className="p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Opportunity Link or Text
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-200 tracking-wide flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-blue-500" />
+                <span>Opportunity Source</span>
               </label>
               <button
                 type="button"
                 onClick={handlePasteClipboard}
-                className="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                className="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1"
               >
-                Paste from Clipboard
+                <Clipboard className="w-3 h-3" />
+                <span>Paste Clipboard</span>
               </button>
             </div>
 
@@ -171,48 +184,44 @@ export default function CapturePage() {
               rows={4}
               value={inputContent}
               onChange={(e) => handleInputChange(e.target.value)}
-              placeholder="https://example.com/job/software-engineer or paste raw job requirements with deadline..."
-              className="w-full p-3 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none font-mono"
+              placeholder="https://example.com/job/software-engineer or paste raw posting details..."
+              className="w-full p-3.5 text-xs rounded-xl liquid-glass-input text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none resize-none font-mono leading-relaxed"
             />
 
-            {/* Quick Type Pills */}
+            {/* Quick Detection Pill */}
             <div className="flex items-center space-x-2 pt-1 text-[11px]">
-              <span className="text-slate-400 text-[10px]">Detected:</span>
-              <span
-                className={`px-2 py-0.5 rounded-md font-bold uppercase text-[10px] ${
-                  isUrl(inputContent)
-                    ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                    : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
+              <span className="text-slate-400 dark:text-slate-500 text-[10px] font-medium">Type:</span>
+              <GlassBadge variant={isUrl(inputContent) ? "blue" : "slate"} size="xs" dot={true}>
                 {isUrl(inputContent) ? "Web URL" : "Raw Text / Snippet"}
-              </span>
+              </GlassBadge>
             </div>
-          </div>
+          </GlassCard>
 
           {/* Submit Action */}
-          <button
+          <GlassButton
             type="submit"
-            className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all flex items-center justify-center space-x-2"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            leftIcon={<Sparkles className="w-4 h-4" />}
+            rightIcon={<ArrowRight className="w-4 h-4" />}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Analyze & Extract with AI</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            Extract & Analyze with AI
+          </GlassButton>
         </form>
       )}
 
-      {/* Helpful Quick Tip */}
-      <div className="bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/40 rounded-2xl p-4 text-xs space-y-1.5">
-        <p className="font-bold text-blue-900 dark:text-blue-200 flex items-center space-x-1.5">
-          <span>💡</span>
+      {/* Helpful Quick Tip in Glass Pill */}
+      <GlassCard className="p-4 space-y-1.5">
+        <p className="font-bold text-xs text-blue-600 dark:text-blue-400 flex items-center space-x-1.5">
+          <Lightbulb className="w-4 h-4" />
           <span>Pro-tip: Android Share Sheet</span>
         </p>
-        <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-[11px]">
+        <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-[11px] font-medium">
           Once installed to your Android home screen, you can tap <strong>Share</strong> in Chrome or any
-          app and select <strong>MNESA</strong> to capture opportunities directly!
+          app and select <strong>MNESA</strong> to capture opportunities directly with zero typing!
         </p>
-      </div>
+      </GlassCard>
     </div>
   );
 }
