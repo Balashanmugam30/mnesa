@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="11" fill="#2563EB" />
+      <g transform="translate(4.800000000000001, 4.800000000000001) scale(0.7999999999999999)">
+        <!-- Brand M-mark with capture target styling -->
+        <path
+          fill="#FFFFFF"
+          d="M8,40 L8,8 L16,8 L24,24 L32,8 L40,8 L40,40 L32,40 L32,20 L24,34 L16,20 L16,40 Z"
+        />
+        <!-- Accent urgency marker -->
+        <polygon
+          fill="#F59E0B"
+          points="24,26 26,30 22,30"
+        />
+      </g>
+    </svg>

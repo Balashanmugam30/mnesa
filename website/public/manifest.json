@@ -1,0 +1,86 @@
+{
+  "name": "MNESA — Opportunity Copilot",
+  "short_name": "MNESA",
+  "description": "AI-powered opportunity capture and follow-through platform. Transform links and deadlines into structured, actionable opportunities.",
+  "id": "/app",
+  "start_url": "/app",
+  "scope": "/app",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFFFF",
+  "theme_color": "#2563EB",
+  "categories": ["productivity", "utilities", "business"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/app/share-target",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Capture Opportunity",
+      "short_name": "Capture",
+      "description": "Quickly analyze and save a link or opportunity",
+      "url": "/app/capture",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "My Opportunities",
+      "short_name": "Opportunities",
+      "description": "View all tracked opportunities and deadlines",
+      "url": "/app",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Reminders",
+      "short_name": "Reminders",
+      "description": "View upcoming deadlines and smart reminders",
+      "url": "/app/reminders",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

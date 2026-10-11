@@ -1,13 +1,35 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { ShellWrapper } from "@/components/ShellWrapper";
+
+export const viewport: Viewport = {
+  themeColor: "#2563EB",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "MNESA — Capture it. We'll remember.",
   description:
     "AI-powered opportunity capture and follow-through platform. Transform messy links, screenshots, and deadlines into structured, actionable opportunities in seconds.",
   metadataBase: new URL("https://mnesa.ai"),
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MNESA",
+  },
   openGraph: {
     title: "MNESA — Capture it. We'll remember.",
     description: "Never miss another career or academic opportunity. Capture it. We'll remember.",
@@ -44,15 +66,7 @@ export default function RootLayout({
         </a>
 
         {/* Global Navigation Shell */}
-        <Navbar />
-
-        {/* Main Content Landmark */}
-        <main id="main-content" role="main" className="flex-1">
-          {children}
-        </main>
-
-        {/* Global Footer Landmark */}
-        <Footer />
+        <ShellWrapper>{children}</ShellWrapper>
       </body>
     </html>
   );
