@@ -27,6 +27,8 @@ springdoc:
     operations-sorter: method
 
 mnesa:
+  ai:
+    service-url: ${MNESA_AI_SERVICE_URL:http://localhost:8001}
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY:mnesa_dev_jwt_secret_key_minimum_256_bits_length_for_hmac_sha256_secure_2026!}
